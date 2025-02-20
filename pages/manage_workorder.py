@@ -212,7 +212,7 @@ def show_workorder_dialog(selected_row_dict, conn):
         )
 
         wo_time_qty = st.number_input(
-            label=":orange[Time estimated(:red[*]):",
+            label=":orange[Time estimated](:red[*]):",
             min_value=min_value, # Usa il valore minimo predefinito
             value=wo_timeqty_default if wo_timeqty_default is not None else 0, # Valore iniziale
             step=0.5)  
@@ -230,7 +230,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_assignedto_default_names.append(name)
 
         wo_assignedto_option = list(df_tdusers["NAME"])
-        wo_assignedto_label = "Tech Department Specialists assigned to (:red[*]):"
+        wo_assignedto_label = ":orange[Tech Department Specialists assigned to] (:red[*]):"
         wo_assignedto = st.multiselect(
             label=wo_assignedto_label, 
             options=wo_assignedto_option, 
@@ -283,7 +283,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 # Save Workorder assignments
                 success = modules.sqlite_db.save_workorder_assignments(woid, wo_tdtl_code, wo_assignedto, st.session_state.df_users, st.session_state.df_woassignedto, conn)
                 # Update request status
-                success = modules.sqlite_db.update_request(wo_reqid, "ASSIGNED", wo_req_note_td, "", [wo_tdtl_code], conn)              
+                success = modules.sqlite_db.update_request(wo_reqid, "ASSIGNED", wo_req_note_td, "", [wo_tdtl_code], wo_proj_class, conn)              
                 if success:
                     st.session_state.grid_refresh = True
                     st.session_state.grid_response = None
