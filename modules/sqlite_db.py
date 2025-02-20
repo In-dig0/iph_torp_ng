@@ -409,7 +409,7 @@ def load_workorders_data(conn):
             A.startdate AS STARTDATE, 
             A.enddate AS ENDDATE,                                       
             A.reqid AS REQID,
-            A.proj_class AS PRJCLASS
+            A.proj_class AS PROJ_CLASS
         FROM TORP_WORKORDERS A
         ORDER BY REQID
         """, conn)
