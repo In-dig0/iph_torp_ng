@@ -301,9 +301,7 @@ def view_requests(conn) -> None:
                 #styled-table th, #styled-table thead tr {
                     background-color: #8ebfde ;
                 }
-                #styled-table tr:nth-child(odd) {
-                    background-color: #f9f9f9; /* Grigio molto chiaro per le righe dispari */
-                }
+
             </style>
             """, unsafe_allow_html=True)
             
