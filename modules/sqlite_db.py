@@ -699,6 +699,8 @@ def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str,
         new_note_td = new_note_td.iloc[0]
     if isinstance(new_woid, pd.Series):
         new_woid = new_woid.iloc[0]
+    if isinstance(new_duedate_td, pd.Series):
+        new_duedate_td = new_duedate_td.iloc[0]        
 
     # Update TORP_REQUESTS
     try:
