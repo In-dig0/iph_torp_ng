@@ -175,7 +175,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_tdtl_code = None # o un valore di default che preferisci            
 
         wo_type = st.selectbox(
-            label=":orange[WO Type(:red[*])", 
+            label=":orange[Type](:red[*])", 
             options=wo_type_options, 
             index=wo_type_index, 
             disabled=False)
