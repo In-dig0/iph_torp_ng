@@ -50,27 +50,6 @@ def view_requests(conn) -> None:
         # Forza il rerun dell'applicazione        
         st.rerun()
 
-    # # Load data into session state if not already present
-    # session_data = {
-    #     'df_depts': modules.sqlite_db.load_dept_data,
-    #     'df_users': modules.sqlite_db.load_users_data,
-    #     'df_pline': modules.sqlite_db.load_pline_data,
-    #     'df_pfamily': modules.sqlite_db.load_pfamily_data,
-    #     'df_category': modules.sqlite_db.load_category_data,
-    #     'df_type': modules.sqlite_db.load_type_data,
-    #     'df_lk_type_category': modules.sqlite_db.load_lk_type_category_data,
-    #     'df_lk_category_detail': modules.sqlite_db.load_lk_category_detail_data,
-    #     'df_lk_pline_tdtl': modules.sqlite_db.load_lk_pline_tdtl_data,
-    #     'df_detail': modules.sqlite_db.load_detail_data,
-    #     'df_requests': modules.sqlite_db.load_requests_data,
-    #     'df_reqassignedto': modules.sqlite_db.load_reqassignedto_data,
-    #     'df_attachments': modules.sqlite_db.load_attachments_data
-    # }
-
-    # for key, loader in session_data.items():
-    #     if key not in st.session_state:
-    #         st.session_state[key] = loader(conn)
-
     modules.sqlite_db.initialize_session_state(conn)
     df_requests_grid = pd.DataFrame()
 

@@ -189,7 +189,7 @@ def create_request(conn)-> None:
 
             # 'Due date' selection
             duedate = st.date_input(
-                label=":blue[Due date(:red[*])]", 
+                label=":blue[Desired due date(:red[*])]", 
                 value=None,
                 format="DD/MM/YYYY",
                 key="di_duedate")   
