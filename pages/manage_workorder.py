@@ -114,13 +114,14 @@ def show_workorder_dialog(selected_row_dict, conn):
 
         wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
         if not wo_startdate_filtered.empty:
-            wo_startdate_default = wo_startdate_filtered.values[0]
+            wo_startdate_default = pd.to_datetime(wo_startdate_filtered.values[0]).date()
         else:
             wo_startdate_default = None  # O un valore di default appropriato
 
+
         wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
         if not wo_enddate_filtered.empty:
-            wo_enddate_default = wo_enddate_filtered.values[0]
+            wo_enddate_default = pd.to_datetime(wo_enddate_filtered.values[0]).date()
         else:
             wo_enddate_default = None  # O un valore di default appropriato
 
