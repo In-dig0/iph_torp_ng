@@ -181,13 +181,13 @@ def show_workorder_dialog(selected_row_dict, conn):
             disabled=False)
 
         wo_proj_class = st.selectbox(
-            label=":orange[Project Class(:red[*])", 
+            label=":orange[Project Class](:red[*])", 
             options=wo_proj_class_options, 
             index=wo_proj_class_index, 
             disabled=False)
 
         wo_status = st.selectbox(
-            label=":orange[Status(:red[*])", 
+            label=":orange[Status](:red[*])", 
             options=WO_STATUS_OPTIONS, 
             index=WO_STATUS_OPTIONS.index(wo_status_default), 
             disabled=False)
