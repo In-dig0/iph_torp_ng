@@ -205,7 +205,7 @@ def view_requests(conn) -> None:
             "Column name": [
                 "Request Id", 
                 "Insert date",
-                "Due date",
+                "Desired due date",
                 "Status", 
                 "Department", 
                 "Requester", 
