@@ -104,7 +104,7 @@ def show_workorder_dialog(selected_row_dict, conn):
         else:
             wo_enddate_default = None  # O un valore di default appropriato
 
-        wo_proj_class_options = ["OEM", "OTHER"]
+        wo_proj_class_options = ["", "OEM", "OTHER"]
         wo_proj_class_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["PROJ_CLASS"]
         if not wo_proj_class_filtered.empty:
             wo_proj_class_default = wo_proj_class_filtered.values[0]
