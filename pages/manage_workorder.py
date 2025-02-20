@@ -121,9 +121,19 @@ def show_workorder_dialog(selected_row_dict, conn):
 
         wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
         if not wo_enddate_filtered.empty:
-            wo_enddate_default = pd.to_datetime(wo_enddate_filtered.values[0]).date()
+            end_date_value = wo_enddate_filtered.values[0]
+            # Controllo specifico per "EMPTY STRING" o stringa vuota
+            if end_date_value == "EMPTY STRING" or end_date_value == "":
+                wo_enddate_default = None
+            else:
+                # Solo se abbiamo una data valida, proviamo a convertirla
+                try:
+                    end_date = pd.to_datetime(end_date_value)
+                    wo_enddate_default = end_date.date()
+                except:
+                    wo_enddate_default = None
         else:
-            wo_enddate_default = ""  # O un valore di default appropriato
+            wo_enddate_default = None
 
         wo_timeqty_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["TIME_QTY"]
         if not wo_timeqty_filtered.empty:
