@@ -340,7 +340,7 @@ def manage_workorder(conn):
 
     df_workorder_grid = pd.DataFrame()
     df_workorder_grid['WOID'] = st.session_state.df_workorders['WOID']
-    tdtlname = modules.servant.get_description_from_code(df_tdusers, st.session_state.df_workorders['TDTLID'], "NAME")
+    tdtlname = modules.servant.get_description_from_code(df_users, st.session_state.df_workorders['TDTLID'], "NAME")
     df_workorder_grid['TDTL_NAME'] = tdtlname
     df_workorder_grid['STATUS'] = st.session_state.df_workorders['STATUS']
     df_workorder_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
