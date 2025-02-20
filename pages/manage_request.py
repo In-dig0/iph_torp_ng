@@ -118,10 +118,10 @@ def show_request_dialog(selected_row_dict, req_status_options, update_request_fn
             disabled=False
         )
 
-        # Display Tech Dept Note
+        # Display Tech Dept confirmed due date
         default_duedate_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == reqid]["DUEDATE_TD"].values[0]
         req_duedate_td = st.date_input(
-            label=":orange[TD condirmed due date]", 
+            label=":orange[Tech Department confirmed due date]", 
             value=default_duedate_td, 
             format="YYYY-MM-DD",            
             disabled=False
