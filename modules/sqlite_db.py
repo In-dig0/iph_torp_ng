@@ -796,9 +796,9 @@ def save_workorder(wo: dict, conn): # Pass connection and cursor
                     wo["enddate"], 
                     wo["reqid"], 
                     wo["sequence"],
+                    wo["proj_class"],                    
                     wo["woid"], 
-                    wo["tdtlid"],
-                    wo["proj_class"]
+                    wo["tdtlid"]
                 )
                 cursor.execute(sql, values)
                 conn.commit()
@@ -809,8 +809,8 @@ def save_workorder(wo: dict, conn): # Pass connection and cursor
                 sql = """
                     INSERT INTO TORP_WORKORDERS (
                         woid, tdtlid, type, title, description, time_qty, time_um,
-                        status, startdate, enddate, reqid, insdate, sequence
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        status, startdate, enddate, reqid, insdate, sequence, proj_class
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 values = (
                     wo["woid"], 

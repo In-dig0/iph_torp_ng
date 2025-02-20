@@ -283,7 +283,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 # Save Workorder assignments
                 success = modules.sqlite_db.save_workorder_assignments(woid, wo_tdtl_code, wo_assignedto, st.session_state.df_users, st.session_state.df_woassignedto, conn)
                 # Update request status
-                success = modules.sqlite_db.update_request(wo_reqid, "ASSIGNED", wo_req_note_td, "", [wo_tdtl_code], wo_proj_class, conn)              
+                #success = modules.sqlite_db.update_request(wo_reqid, "ASSIGNED", wo_req_note_td, "", [wo_tdtl_code], wo_req_duedate_td, conn)              
                 if success:
                     st.session_state.grid_refresh = True
                     st.session_state.grid_response = None
