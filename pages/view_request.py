@@ -96,8 +96,8 @@ def view_requests(conn) -> None:
         function(params) {
             if (params.column.colId === 'REQID') {
                        return {
-                        'backgroundColor': '#D2E5F2',
-                        'color': '#111810',
+                        'backgroundColor': '#8ebfde',
+                        'color': '#00000',
                         'fontWeight': 'bold'
                     };
             }

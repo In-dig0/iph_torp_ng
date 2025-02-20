@@ -297,7 +297,7 @@ def manage_workorder(conn):
             if (params.column.colId === 'WOID') {
                        return {
                         'backgroundColor': '#8ebfde',
-                        'color': '#111810',
+                        'color': '#000000',
                         'fontWeight': 'bold'
                     };
             }
