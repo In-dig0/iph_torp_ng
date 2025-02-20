@@ -49,7 +49,8 @@ def main():
     homepage = st.Page(
         "pages/home.py",
         title="Homepage",
-        icon=":material/home:",
+        icon="ℹ️",
+        #icon=":material/home:",
 #        default=(role == "Requester")
         default=True
     )
@@ -57,41 +58,53 @@ def main():
     create_request = st.Page(
         "pages/create_request.py",
         title="Create Request",
-        icon=":material/problem:",
+        icon="📄",
+        #icon=":material/problem:",
         default=False
     )
 
     view_request = st.Page(
         "pages/view_request.py",
         title="View Requests",
-        icon=":material/list:",
+        icon="🔍",
+        #icon=":material/list:",
         default=False
     )
 
     manage_request = st.Page(
         "pages/manage_request.py",
         title="Manage Request",
-        icon=":material/bookmark_manager:",
+        icon="🗂️",
+        #icon=":material/bookmark_manager:",
         default=False
     )
 
     manage_workorder = st.Page(
     "pages/manage_workorder.py",
     title="Manage Work Order",
-    icon=":material/order_approve:",
+    icon="📌",
+    #icon=":material/order_approve:",
     default=False
     )
 
     manage_workitem = st.Page(
     "pages/manage_workitem.py",
     title="Manage Work Item",
-    icon=":material/task:",
+    icon="🎯",
+    #icon=":material/task:",
     default=False
     )
 
+    dashboard_request = st.Page(
+    "pages/dashboard_request.py",
+    title="Dashboard Requests",
+    icon="📉",
+    default=False
+    )
 
     account_pages = [logout_page, settings]
     requester_pages = [homepage, create_request, view_request]
+    requester_manager_pages = [homepage, view_request, manage_request]
     td_team_leader_pages = [homepage, view_request, manage_request, manage_workorder]
     td_specialist_pages = [homepage, manage_workorder, manage_workitem]
 
