@@ -190,11 +190,14 @@ def show_workorder_dialog(selected_row_dict, conn):
             index=wo_type_index, 
             disabled=False)
 
-        wo_proj_class = st.selectbox(
-            label=":orange[Project Class](:red[*])", 
-            options=wo_proj_class_options, 
-            index=wo_proj_class_index, 
-            disabled=False)
+        if wo_type == "APQP Project":
+            wo_proj_class = st.selectbox(
+                label=":orange[Project Class](:red[*])", 
+                options=wo_proj_class_options, 
+                index=wo_proj_class_index, 
+                disabled=False)
+        else:
+            wo_proj_class = ""        
 
         wo_status = st.selectbox(
             label=":orange[Status](:red[*])", 
