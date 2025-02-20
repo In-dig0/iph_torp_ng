@@ -100,11 +100,18 @@ def show_workorder_dialog(selected_row_dict, conn):
         else:
             wo_proj_class_index = None  # O un valore di default appropriato
 
+        # Gestione della data di inizio con None come default
         wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
+
         if not wo_startdate_filtered.empty:
-            wo_startdate_default = pd.to_datetime(wo_startdate_filtered.values[0]).date()
+            # Converti in datetime e gestisci possibili valori NaT
+            start_date = pd.to_datetime(wo_startdate_filtered.values[0])
+            if pd.isna(start_date):
+                wo_startdate_default = None
+            else:
+                wo_startdate_default = start_date.date()
         else:
-            wo_startdate_default = ""  # O un valore di default appropriato
+            wo_startdate_default = None
 
 
         wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
@@ -230,11 +237,11 @@ def show_workorder_dialog(selected_row_dict, conn):
         # wo_startdate = None
         # wo_enddate = None     
 
-        wo_insdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["INSDATE"]
-        if not wo_insdate_filtered.empty:
-            wo_startdate_default = wo_insdate_filtered.values[0]
-        else:
-            wo_startdate_default = datetime.datetime.now().strftime("%Y-%m-%d")  # O un valore di default appropriato
+        # wo_insdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["INSDATE"]
+        # if not wo_insdate_filtered.empty:
+        #     wo_startdate_default = wo_insdate_filtered.values[0]
+        # else:
+        #     wo_startdate_default = datetime.datetime.now().strftime("%Y-%m-%d")  # O un valore di default appropriato
 
         wo_sequence = ""  # Valore di default per la sequenza
         wo_req_note_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["NOTE_TD"]
