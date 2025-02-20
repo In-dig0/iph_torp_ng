@@ -398,7 +398,7 @@ def manage_workorder(conn):
         key='Status_value'
     )
     
-    wo_tdtl_options = df_workorder_grid['TDTLID'].drop_duplicates().sort_values()
+    wo_tdtl_options = df_workorder_grid['TDTL_NAME'].drop_duplicates().sort_values()
     tdtl_filter = st.sidebar.selectbox(
         ":orange[TDTL Id]", 
         wo_tdtl_options, 
@@ -411,7 +411,7 @@ def manage_workorder(conn):
     if status_filter: 
         filtered_data = filtered_data[filtered_data["STATUS"] == status_filter] 
     if tdtl_filter: 
-        filtered_data = filtered_data[filtered_data["TDTLID"] == tdtl_filter] 
+        filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter] 
     st.session_state.grid_data = filtered_data
 
     # Display grid
