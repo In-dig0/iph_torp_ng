@@ -1,11 +1,9 @@
 pandas
 streamlit
 sqlitecloud
-#pytz
 streamlit-aggrid
-#streamlit-modal
-#extra-streamlit-components
 reportlab
 altair
 streamlit-calendar
 streamlit_card
+streamlit-option-menu
