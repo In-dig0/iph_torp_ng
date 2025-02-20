@@ -1,0 +1,21 @@
+cookie:
+  expiry_days: 0
+  key: some_signature_key
+  name: authentication_cookie
+credentials:
+  usernames:
+    barric:
+      email: baravellir@gmail.com
+      failed_login_attempts: 0
+      logged_in: false
+      name: Riccardo Baravelli
+      password: $2b$12$scMRLa.D6BG0vN7a4J1X6OMC7I9P.HxUFa/TbLiCWsKm6UZeY7/RC
+      role: user
+    username2:
+      email: user2@example.com
+      name: User Two
+      password: $2b$12$G1ptajQjyu0FsbLf1bRyFOIzimUfgaXQ6J3cqKSMFS8xRnTT.UZ.6
+      role: user
+preauthorized:
+  emails:
+  - melsby@gmail.com
