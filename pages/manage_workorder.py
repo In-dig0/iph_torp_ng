@@ -239,8 +239,8 @@ def show_workorder_dialog(selected_row_dict, conn):
             disabled=False
         )
         
-        wo_startdate = None
-        wo_enddate = None     
+        # wo_startdate = None
+        # wo_enddate = None     
 
         wo_insdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["INSDATE"]
         if not wo_insdate_filtered.empty:
