@@ -408,7 +408,8 @@ def load_workorders_data(conn):
             A.time_um AS TIME_UM,                                                                
             A.startdate AS STARTDATE, 
             A.enddate AS ENDDATE,                                       
-            A.reqid AS REQID
+            A.reqid AS REQID,
+            A.proj_class AS PRJCLASS
         FROM TORP_WORKORDERS A
         ORDER BY REQID
         """, conn)
@@ -779,7 +780,8 @@ def save_workorder(wo: dict, conn): # Pass connection and cursor
                         startdate = ?,
                         enddate = ?, 
                         reqid = ?, 
-                        sequence = ?
+                        sequence = ?,
+                        proj_class = ?
                     WHERE woid = ?
                     AND tdtlid = ?
                 """
@@ -795,7 +797,8 @@ def save_workorder(wo: dict, conn): # Pass connection and cursor
                     wo["reqid"], 
                     wo["sequence"],
                     wo["woid"], 
-                    wo["tdtlid"]
+                    wo["tdtlid"],
+                    wo["proj_class"]
                 )
                 cursor.execute(sql, values)
                 conn.commit()
@@ -822,7 +825,8 @@ def save_workorder(wo: dict, conn): # Pass connection and cursor
                     wo["enddate"], 
                     wo["reqid"], 
                     wo["insdate"], 
-                    wo["sequence"]
+                    wo["sequence"],
+                    wo["proj_class"]
                 )
                 cursor.execute(sql, values)
                 conn.commit()
