@@ -689,7 +689,7 @@ def view_attachments(reqid: str, conn)-> None:
     return True
 
     # Database update functions
-def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str = "", new_tdtl: list=[], conn=""):
+def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str = "", new_tdtl: list=[], new_duedate_td: str, conn=""):
     
     #st.write(f"POINT_U0: reqid = {reqid} - new_status = {new_status} - new_note_td = {new_note_td} - new_tdtl = {new_tdtl}")
 
@@ -705,8 +705,8 @@ def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str 
         with conn:  # Use a context manager for the connection
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE TORP_REQUESTS SET status = ?, note_td = ?, woid = ? WHERE reqid = ?",
-                (new_status, new_note_td, new_woid, reqid)
+                "UPDATE TORP_REQUESTS SET status = ?, note_td = ?, woid = ? duedate_td = ? WHERE reqid = ?",
+                (new_status, new_note_td, new_woid, new_duedate_td, reqid)
             )
             conn.commit()
     except Exception as e:

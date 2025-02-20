@@ -112,15 +112,28 @@ def show_request_dialog(selected_row_dict, req_status_options, update_request_fn
 
         # Display Tech Dept Note
         default_note_td = str(st.session_state.df_requests[st.session_state.df_requests["REQID"] == reqid]["NOTE_TD"].values[0])
-        req_note_td = st.text_area(label=":orange[Tech Department Notes]", value=default_note_td, disabled=False)
+        req_note_td = st.text_area(
+            label=":orange[Tech Department Notes]", 
+            value=default_note_td, 
+            disabled=False
+        )
 
-        if (req_note_td == default_note_td) and (selected_row_dict['STATUS'] == req_status) and (req_tdtl_name == default_tdtl_name): #Usa selected_row_dict
+        # Display Tech Dept Note
+        default_duedate_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == reqid]["DUEDATE_TD"].values[0]
+        req_duedate_td = st.date_input(
+            label=":orange[TD condirmed due date]", 
+            value=default_duedate_td, 
+            format="YYYY-MM-DD",            
+            disabled=False
+        )        
+
+        if (req_note_td == default_note_td) and (selected_row_dict['STATUS'] == req_status) and (req_tdtl_name == default_tdtl_name) and (req_duedate_td == default_duedate_td): #Usa selected_row_dict
             disable_save_button = True
         else:
             disable_save_button = False   
 
         if st.button("Salva", type="primary", disabled=disable_save_button, key="req_save_button"):
-            success = update_request_fn(reqid, req_status, req_note_td, 0, req_tdtl_code, conn)
+            success = update_request_fn(reqid, req_status, req_note_td, 0, req_tdtl_code, req_duedate_td, conn)
             if success:
               st.session_state.grid_refresh = True
               st.session_state.grid_response = None
