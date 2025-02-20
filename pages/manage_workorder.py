@@ -288,6 +288,7 @@ def manage_workorder(conn):
     df_workorder_grid['WOID'] = st.session_state.df_workorders['WOID']
     df_workorder_grid['TDTLID'] = st.session_state.df_workorders['TDTLID'] 
     df_workorder_grid['STATUS'] = st.session_state.df_workorders['STATUS']
+    df_workorder_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
     df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
     df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
     df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
