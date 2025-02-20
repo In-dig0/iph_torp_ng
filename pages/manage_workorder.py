@@ -111,7 +111,18 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_proj_class_index = wo_proj_class_options.index(wo_proj_class_default)
         else:
             wo_proj_class_index = None  # O un valore di default appropriato
-        
+
+        wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
+        if not wo_startdate_filtered.empty:
+            wo_startdate_default = wo_startdate_filtered.values[0]
+        else:
+            wo_startdate_default = None  # O un valore di default appropriato
+
+        wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
+        if not wo_enddate_filtered.empty:
+            wo_enddate_default = wo_enddate_filtered.values[0]
+        else:
+            wo_enddate_default = None  # O un valore di default appropriato
 
         wo_timeqty_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["TIME_QTY"]
         if not wo_timeqty_filtered.empty:
@@ -163,25 +174,42 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_tdtl_code = None # o un valore di default che preferisci            
 
         wo_type = st.selectbox(
-            label="WO Type(:red[*])", 
+            label=":orange[WO Type(:red[*])", 
             options=wo_type_options, 
             index=wo_type_index, 
             disabled=False)
 
         wo_proj_class = st.selectbox(
-            label="Project Class(:red[*])", 
+            label=":orange[Project Class(:red[*])", 
             options=wo_proj_class_options, 
             index=wo_proj_class_index, 
             disabled=False)
 
         wo_status = st.selectbox(
-            label="Status(:red[*])", 
+            label=":orange[Status(:red[*])", 
             options=WO_STATUS_OPTIONS, 
             index=WO_STATUS_OPTIONS.index(wo_status_default), 
             disabled=False)
 
+
+        wo_startdate = st.date_input(
+            label=":orange[Start date](:red[*])", 
+            value=wo_startdate_default, 
+            format="YYYY-MM-DD",
+            key="startdate_input", 
+            disabled=False
+        )
+
+        wo_enddate = st.date_input(
+            label=":orange[End date](:red[*])", 
+            value=wo_startdate_default, 
+            format="YYYY-MM-DD",
+            key="enddate_input", 
+            disabled=False
+        )
+
         wo_time_qty = st.number_input(
-            label="Time estimated(:red[*]):",
+            label=":orange[Time estimated(:red[*]):",
             min_value=min_value, # Usa il valore minimo predefinito
             value=wo_timeqty_default if wo_timeqty_default is not None else 0, # Valore iniziale
             step=0.5)  
