@@ -104,6 +104,15 @@ def show_workorder_dialog(selected_row_dict, conn):
         else:
             wo_enddate_default = None  # O un valore di default appropriato
 
+        wo_proj_class_options = ["OEM", "OTHER"]
+        wo_proj_class_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["PROJ_CLASS"]
+        if not wo_proj_class_filtered.empty:
+            wo_proj_class_default = wo_proj_class_filtered.values[0]
+            wo_proj_class_index = wo_proj_class_options.index(wo_proj_class_default)
+        else:
+            wo_proj_class_index = None  # O un valore di default appropriato
+        
+
         wo_timeqty_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["TIME_QTY"]
         if not wo_timeqty_filtered.empty:
             wo_timeqty_default = float(wo_timeqty_filtered.iloc[0])  # Converti a float!
@@ -154,9 +163,15 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_tdtl_code = None # o un valore di default che preferisci            
 
         wo_type = st.selectbox(
-            label="Type(:red[*])", 
+            label="WO Type(:red[*])", 
             options=wo_type_options, 
             index=wo_type_index, 
+            disabled=False)
+
+        wo_proj_class = st.selectbox(
+            label="Project Class(:red[*])", 
+            options=wo_proj_class_options, 
+            index=wo_proj_class_index, 
             disabled=False)
 
         wo_status = st.selectbox(
@@ -228,6 +243,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 "reqid": wo_reqid,
                 "insdate": wo_startdate_default,
                 "sequence": wo_sequence,
+                "proj_class": wo_proj_class,
             }
             # Save Workorder data
             wo_idrow, success = modules.sqlite_db.save_workorder(wo, conn)
