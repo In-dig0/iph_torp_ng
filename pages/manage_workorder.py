@@ -192,7 +192,7 @@ def show_workorder_dialog(selected_row_dict, conn):
 
         if wo_type == "APQP Project":
             wo_proj_class = st.selectbox(
-                label=":orange[Project Class](:red[*])", 
+                label=":orange[Project Class]", 
                 options=wo_proj_class_options, 
                 index=wo_proj_class_index, 
                 disabled=False)
@@ -252,22 +252,16 @@ def show_workorder_dialog(selected_row_dict, conn):
             disabled=False
         )
         
-        # wo_startdate = None
-        # wo_enddate = None     
-
-        # wo_insdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["INSDATE"]
-        # if not wo_insdate_filtered.empty:
-        #     wo_startdate_default = wo_insdate_filtered.values[0]
-        # else:
-        #     wo_startdate_default = datetime.datetime.now().strftime("%Y-%m-%d")  # O un valore di default appropriato
-
         wo_sequence = ""  # Valore di default per la sequenza
         wo_req_note_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["NOTE_TD"]
         
         if (wo_type == wo_type_default and 
             wo_assignedto == wo_assignedto_default_names and 
             wo_time_qty == wo_timeqty_default and 
-            wo_status == wo_status_default):
+            wo_status == wo_status_default and 
+            wo_startdate == wo_startdate_default and
+            wo_enddate == wo_enddate_default
+            ):
             disable_save_button = True
         else:
             disable_save_button = False    
