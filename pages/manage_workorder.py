@@ -104,12 +104,17 @@ def show_workorder_dialog(selected_row_dict, conn):
         wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
 
         if not wo_startdate_filtered.empty:
-            # Converti in datetime e gestisci possibili valori NaT
-            start_date = pd.to_datetime(wo_startdate_filtered.values[0])
-            if pd.isna(start_date):
+            start_date_value = wo_startdate_filtered.values[0]
+            # Controllo specifico per "EMPTY STRING" o stringa vuota
+            if start_date_value == "EMPTY STRING" or start_date_value == "":
                 wo_startdate_default = None
             else:
-                wo_startdate_default = start_date.date()
+                # Solo se abbiamo una data valida, proviamo a convertirla
+                try:
+                    start_date = pd.to_datetime(start_date_value)
+                    wo_startdate_default = start_date.date()
+                except:
+                    wo_startdate_default = None
         else:
             wo_startdate_default = None
 
