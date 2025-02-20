@@ -340,7 +340,9 @@ def load_requests_data(conn):
         df_requests["INSDATE"] = pd.to_datetime(df_requests["INSDATE"])
         df_requests["INSDATE"] = df_requests["INSDATE"].dt.strftime('%Y-%m-%d')
         df_requests["DUEDATE"] = pd.to_datetime(df_requests["DUEDATE"])
-        df_requests["DUEDATE"] = df_requests["DUEDATE"].dt.strftime('%Y-%m-%d')        
+        df_requests["DUEDATE"] = df_requests["DUEDATE"].dt.strftime('%Y-%m-%d')
+        df_requests["DUEDATE_TD"] = pd.to_datetime(df_requests["DUEDATE_TD"])
+        df_requests["DUEDATE_TD"] = df_requests["DUEDATE_TD"].dt.strftime('%Y-%m-%d')                  
     except Exception as errMsg:
         st.error(f"**ERROR load data from TORP_REQUESTS: \n{errMsg}", icon="🚨")
         return None
@@ -707,7 +709,7 @@ def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str,
         with conn:  # Use a context manager for the connection
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE TORP_REQUESTS SET status = ?, note_td = ?, woid = ? duedate_td = ? WHERE reqid = ?",
+                "UPDATE TORP_REQUESTS SET status = ?, note_td = ?, woid = ?, duedate_td = ? WHERE reqid = ?",
                 (new_status, new_note_td, new_woid, new_duedate_td, reqid)
             )
             conn.commit()
