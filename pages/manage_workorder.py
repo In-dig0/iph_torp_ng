@@ -92,18 +92,6 @@ def show_workorder_dialog(selected_row_dict, conn):
         else:
             wo_type_index = 0  
 
-        wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
-        if not wo_startdate_filtered.empty:
-            wo_startdate_default = pd.to_datetime(wo_startdate_filtered.values[0]).date()
-        else:
-            wo_startdate_default = ""  # O un valore di default appropriato
-
-        wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
-        if not wo_enddate_filtered.empty:
-            wo_enddate_default = pd.to_datetime(wo_enddate_filtered.values[0]).date()
-        else:
-            wo_enddate_default = ""  # O un valore di default appropriato
-
         wo_proj_class_options = ["", "OEM", "OTHER"]
         wo_proj_class_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["PROJ_CLASS"]
         if not wo_proj_class_filtered.empty:
@@ -196,7 +184,7 @@ def show_workorder_dialog(selected_row_dict, conn):
         wo_startdate = st.date_input(
             label=":orange[Start date](:red[*])", 
             #value=wo_startdate_default,
-            value=None,
+            value=wo_startdate_default
             format="YYYY-MM-DD",
             key="startdate_input", 
             disabled=False
