@@ -299,13 +299,10 @@ def view_requests(conn) -> None:
                     padding: 8px;
                 }
                 #styled-table th, #styled-table thead tr {
-                    background-color: #D2E5F2 ;
+                    background-color: #8ebfde ;
                 }
                 #styled-table tr:nth-child(odd) {
                     background-color: #f9f9f9; /* Grigio molto chiaro per le righe dispari */
-                }
-                #styled-table tr:nth-child(even) {
-                    background-color: #ffffff; /* Bianco per le righe pari */
                 }
             </style>
             """, unsafe_allow_html=True)
