@@ -184,7 +184,7 @@ def show_workorder_dialog(selected_row_dict, conn):
         wo_startdate = st.date_input(
             label=":orange[Start date](:red[*])", 
             #value=wo_startdate_default,
-            value=wo_startdate_default
+            value=wo_startdate_default,
             format="YYYY-MM-DD",
             key="startdate_input", 
             disabled=False
