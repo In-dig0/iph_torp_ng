@@ -519,28 +519,32 @@ def manage_workorder(conn):
     # Aggiungiamo debug per vedere cosa riceviamo
     st.write("Debug - Tipo di grid_response:", type(grid_response))
 
-    # Verifica se ci sono righe selezionate usando attributi del DataFrame
-    if hasattr(grid_response, 'selected_rows') and not grid_response.selected_rows.empty:
-        selected_row = grid_response.selected_rows.iloc[0]  # Usiamo iloc per DataFrame
-        
-        with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
-            details = {
-                'WOID': selected_row['WOID'],
-                'Status': selected_row['STATUS'],
-                'Type': selected_row['TYPE'],
-                'Data Inserimento': selected_row['INSDATE'],
-                'Titolo': selected_row['TITLE']
-            }
+    # Verifica se ci sono righe selezionate
+    if isinstance(grid_response, dict) and 'selected_rows' in grid_response:
+        selected_rows = grid_response['selected_rows']
+        if selected_rows:  # Verifica se la lista non è vuota
+            selected_row = selected_rows[0]  # Prendi la prima riga selezionata
             
-            col1, col2 = st.columns(2)
-            for key, value in details.items():
-                with col1:
-                    st.write(f"**{key}:**")
-                with col2:
-                    st.write(value)
-            
-            st.write("---")
-            st.write("Dettagli aggiuntivi del Work Order")
+            with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
+                details = {
+                    'WOID': selected_row['WOID'],
+                    'Status': selected_row['STATUS'],
+                    'Type': selected_row['TYPE'],
+                    'Data Inserimento': selected_row['INSDATE'],
+                    'Titolo': selected_row['TITLE']
+                }
+                
+                col1, col2 = st.columns(2)
+                for key, value in details.items():
+                    with col1:
+                        st.write(f"**{key}:**")
+                    with col2:
+                        st.write(value)
+                
+                st.write("---")
+                st.write("Dettagli aggiuntivi del Work Order")
+    else:
+        st.write("Nessuna riga selezionata o formato di grid_response non supportato.")
 
     # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
