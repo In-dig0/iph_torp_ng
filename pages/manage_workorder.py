@@ -385,6 +385,12 @@ def manage_workorder(conn):
 
 
     # Initialize session state
+    st.set_page_config(
+    page_title="Manager Work Order",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+    )
+
     modules.sqlite_db.initialize_session_state(conn)
     if "grid_data" not in st.session_state:
         st.session_state.grid_data = st.session_state.df_workorders.copy()
