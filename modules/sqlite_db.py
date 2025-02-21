@@ -321,7 +321,7 @@ def load_wo_phases_data(conn):
                 A.phase_code AS PHASE_CODE,
                 A.status AS STATUS,
                 A.startdate AS STARDATE,
-                A.endate AS ENDDATE,
+                A.enddate AS ENDDATE,
                 A.progress AS PROGRESS
             FROM TORP_WO_PHASES AS A
             ORDER by woid
