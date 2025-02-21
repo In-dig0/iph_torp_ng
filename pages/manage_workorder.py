@@ -26,17 +26,11 @@ def show_wo_phases_dialog(selected_row_dict, conn):
     
     df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
     with st.container(border=True):
-        st.dataframe(
-                df_phases_wo, 
-                use_container_width=True, 
-                hide_index=True#,
-                # column_order=["REFDATE", 
-                #                 "WOID", 
-                #                 "TDSP_DESC", 
-                #                 #"TSKGRL1_DESC", 
-                #                 "TSKGRL2_DESC", 
-                #                 "TIME_QTY", 
-                #                 "TIME_UM"]
+        edited_df = st.data_editor(
+                        df_phases_wo, 
+                        use_container_width=True, 
+                        hide_index=False,
+                        num_rows="dynamic"
                 )
 
 def show_workorder_dialog(selected_row_dict, conn):
