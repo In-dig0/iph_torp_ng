@@ -329,10 +329,24 @@ def reset_application_state():
 def manage_workorder(conn):
 
 ###################################################################
-    def create_grid():
-        grid_builder = GridOptionsBuilder.from_dataframe(df_workorder_grid)
+
+    def get_detail_data(woid):
+        """
+        Funzione che recupera i dati di dettaglio per un determinato WOID.
+        Personalizza questa funzione in base ai tuoi dati.
+        """
+        # Esempio: potresti fare una query al database qui
+        detail_data = {
+            'Descrizione': f'Dettagli per il work order {woid}',
+            'Note': 'Informazioni aggiuntive...',
+            # Aggiungi altri campi secondo necessità
+        }
+        return detail_data
+
+    def create_grid(df):
+        grid_builder = GridOptionsBuilder.from_dataframe(df)
         
-        # Configurazione base (come nel tuo codice originale)
+        # Configurazione base delle colonne
         grid_builder.configure_default_column(
             resizable=True,
             filterable=True,
@@ -341,62 +355,27 @@ def manage_workorder(conn):
             enableRowGroup=False
         )
         
-        # Configurazione Master Detail
-        grid_builder.configure_grid_options(
-            masterDetail=True,
-            detailRowHeight=200,
-            detailCellRendererParams={
-                "detailGridOptions": {
-                    "columnDefs": [
-                        {"field": "field1"},
-                        {"field": "field2"},
-                        # Definisci le colonne per la griglia di dettaglio
-                    ],
-                    "defaultColDef": {
-                        "flex": 1
-                    }
-                },
-                "getDetailRowData": "getDetailRowData"
-            }
-        )
-        
-        # Resto delle configurazioni come nel tuo codice
-        grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-        grid_builder.configure_grid_options(domLayout='normal')
-        grid_builder.configure_column("WOID", cellStyle=cellStyle)
+        # Configurazione selezione riga
         grid_builder.configure_selection(
             selection_mode='single',
             use_checkbox=True,
             header_checkbox=True
         )
         
-        # JavaScript custom per gestire i dettagli
-        js_code = """
-        function getDetailRowData(params) {
-            // Qui puoi personalizzare i dati da mostrare nel dettaglio
-            return {
-                data: [
-                    {
-                        field1: 'Dettaglio 1 per ' + params.data.WOID,
-                        field2: 'Altro dettaglio'
-                    }
-                    // Aggiungi altri dati secondo necessità
-                ]
-            };
-        }
-        """
+        # Altre configurazioni
+        grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
+        grid_builder.configure_grid_options(domLayout='normal')
+        grid_builder.configure_column("WOID", cellStyle=cellStyle)
         
         grid_options = grid_builder.build()
-        grid_options['detailRowHeight'] = 200
-        grid_options['getDetailRowData'] = js_code
         
         return AgGrid(
-            st.session_state.grid_data,
+            df,
             gridOptions=grid_options,
             allow_unsafe_jscode=True,
             theme="balham",
             fit_columns_on_grid_load=False,
-            update_mode=GridUpdateMode.MODEL_CHANGED,
+            update_mode=GridUpdateMode.SELECTION_CHANGED,  # Importante: reagisce ai cambi di selezione
             data_return_mode=DataReturnMode.AS_INPUT,
             key="main_grid"
         )
@@ -436,27 +415,27 @@ def manage_workorder(conn):
             return null;
         }
         """)
-    grid_builder = GridOptionsBuilder.from_dataframe(df_workorder_grid)
-    # makes columns resizable, sortable and filterable by default
-    grid_builder.configure_default_column(
-        resizable=True,
-        filterable=True,
-        sortable=True,
-        editable=False,
-        enableRowGroup=False
-    )
-    # Enalble pagination
-    grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-    grid_builder.configure_grid_options(domLayout='normal')
-    grid_builder.configure_column("WOID", cellStyle=cellStyle)
-    grid_builder.configure_selection(
-    selection_mode='single',     # Enable multiple row selection
-    use_checkbox=True,             # Show checkboxes for selection
-    header_checkbox=True
-    )
-    grid_options = grid_builder.build()
-    # List of available themes
-    available_themes = ["streamlit", "alpine", "balham", "material"]
+    # grid_builder = GridOptionsBuilder.from_dataframe(df_workorder_grid)
+    # # makes columns resizable, sortable and filterable by default
+    # grid_builder.configure_default_column(
+    #     resizable=True,
+    #     filterable=True,
+    #     sortable=True,
+    #     editable=False,
+    #     enableRowGroup=False
+    # )
+    # # Enalble pagination
+    # grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
+    # grid_builder.configure_grid_options(domLayout='normal')
+    # grid_builder.configure_column("WOID", cellStyle=cellStyle)
+    # grid_builder.configure_selection(
+    # selection_mode='single',     # Enable multiple row selection
+    # use_checkbox=True,             # Show checkboxes for selection
+    # header_checkbox=True
+    # )
+    # grid_options = grid_builder.build()
+    # # List of available themes
+    # available_themes = ["streamlit", "alpine", "balham", "material"]
     
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
@@ -493,21 +472,43 @@ def manage_workorder(conn):
 
     # Display grid
     st.subheader(":orange[Work Order list]")
-    
-    # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
-    st.session_state.grid_response = AgGrid(
-        st.session_state.grid_data,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,
-        theme=available_themes[2],
-        fit_columns_on_grid_load=False,
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        data_return_mode=DataReturnMode.AS_INPUT,
-        key="main_grid"
-    )
+    grid_response = create_grid(st.session_state.grid_data)
+
+    # # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
+    # st.session_state.grid_response = AgGrid(
+    #     st.session_state.grid_data,
+    #     gridOptions=grid_options,
+    #     allow_unsafe_jscode=True,
+    #     theme=available_themes[2],
+    #     fit_columns_on_grid_load=False,
+    #     update_mode=GridUpdateMode.MODEL_CHANGED,
+    #     data_return_mode=DataReturnMode.AS_INPUT,
+    #     key="main_grid"
+    # )
 
 
     selected_rows = st.session_state.grid_response['selected_rows']
+    # Mostra i dettagli se una riga è selezionata
+    if grid_response['selected_rows']:
+        selected_row = grid_response['selected_rows'][0]
+        with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
+            # Recupera e mostra i dettagli
+            details = get_detail_data(selected_row['WOID'])
+            
+            # Crea due colonne per i dettagli
+            col1, col2 = st.columns(2)
+            
+            # Mostra i dettagli nelle colonne
+            for key, value in details.items():
+                with col1:
+                    st.write(f"**{key}:**")
+                with col2:
+                    st.write(value)
+            
+            # Puoi aggiungere altri elementi Streamlit qui
+            st.write("---")
+            st.write("Altri dettagli o grafici possono essere aggiunti qui")
+
     workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
 
