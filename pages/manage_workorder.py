@@ -461,24 +461,24 @@ def manage_workorder(conn):
     workitem_button_disable = False
 
     # ... (Pulsanti e chiamate di dialogo)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("🔄 Refresh data", type="secondary"):
-            reset_application_state()
-            st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
+    #col1, col2, col3 = st.columns(3)
+    #with col1:
+    if st.button("🔄 Refresh data", type="secondary"):
+        reset_application_state()
+        st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
     
-    with col2:
-        if st.button("✏️ Modify Work Order", type="secondary", disabled=workorder_button_disable):
-            if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-                selected_rows_df = st.session_state.grid_response['selected_rows']
-                selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
-                show_workorder_dialog(selected_row_dict, conn)
+    #with col2:
+    if st.button("✏️ Modify Work Order", type="secondary", disabled=workorder_button_disable):
+        if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
+            selected_rows_df = st.session_state.grid_response['selected_rows']
+            selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
+            show_workorder_dialog(selected_row_dict, conn)
 
-    with col3:
-        if st.button("🎯 Create Work Item", type="secondary", disabled=workitem_button_disable):
-            if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-                selected_rows_df = st.session_state.grid_response['selected_rows']
-                selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
+    #with col3:
+    if st.button("🎯 Create Work Item", type="secondary", disabled=workitem_button_disable):
+        if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
+            selected_rows_df = st.session_state.grid_response['selected_rows']
+            selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
 
 
 def main():
