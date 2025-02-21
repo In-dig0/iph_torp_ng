@@ -395,7 +395,7 @@ def manage_workorder(conn):
     df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
     df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
     df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
-    df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["DUEDATE_TD"]
+    df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == st.session_state.df_workorders['REQID']["DUEDATE_TD"]
     
 
     cellStyle = JsCode("""
