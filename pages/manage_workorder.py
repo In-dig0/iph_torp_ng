@@ -470,44 +470,82 @@ def manage_workorder(conn):
         filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter] 
     st.session_state.grid_data = filtered_data
 
-    # Display grid
+    # # Display grid
+    # st.subheader(":orange[Work Order list]")
+    # grid_response = create_grid(st.session_state.grid_data)
+
+    # # # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
+    # # st.session_state.grid_response = AgGrid(
+    # #     st.session_state.grid_data,
+    # #     gridOptions=grid_options,
+    # #     allow_unsafe_jscode=True,
+    # #     theme=available_themes[2],
+    # #     fit_columns_on_grid_load=False,
+    # #     update_mode=GridUpdateMode.MODEL_CHANGED,
+    # #     data_return_mode=DataReturnMode.AS_INPUT,
+    # #     key="main_grid"
+    # # )
+
+
+    # selected_rows = st.session_state.grid_response['selected_rows']
+    # # Mostra i dettagli se una riga è selezionata
+    # if grid_response['selected_rows']:
+    #     selected_row = grid_response['selected_rows'][0]
+    #     with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
+    #         # Recupera e mostra i dettagli
+    #         details = get_detail_data(selected_row['WOID'])
+            
+    #         # Crea due colonne per i dettagli
+    #         col1, col2 = st.columns(2)
+            
+    #         # Mostra i dettagli nelle colonne
+    #         for key, value in details.items():
+    #             with col1:
+    #                 st.write(f"**{key}:**")
+    #             with col2:
+    #                 st.write(value)
+            
+    #         # Puoi aggiungere altri elementi Streamlit qui
+    #         st.write("---")
+    #         st.write("Altri dettagli o grafici possono essere aggiunti qui")
+
+    # Display grid and handle selection
     st.subheader(":orange[Work Order list]")
     grid_response = create_grid(st.session_state.grid_data)
 
-    # # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
-    # st.session_state.grid_response = AgGrid(
-    #     st.session_state.grid_data,
-    #     gridOptions=grid_options,
-    #     allow_unsafe_jscode=True,
-    #     theme=available_themes[2],
-    #     fit_columns_on_grid_load=False,
-    #     update_mode=GridUpdateMode.MODEL_CHANGED,
-    #     data_return_mode=DataReturnMode.AS_INPUT,
-    #     key="main_grid"
-    # )
+    # Aggiungiamo del debug per vedere cosa contiene grid_response
+    st.write("Debug - Selected Rows:", grid_response.get('selected_rows', []))
 
-
-    selected_rows = st.session_state.grid_response['selected_rows']
     # Mostra i dettagli se una riga è selezionata
-    if grid_response['selected_rows']:
+    if grid_response.get('selected_rows'):  # Uso .get() per sicurezza
         selected_row = grid_response['selected_rows'][0]
-        with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
-            # Recupera e mostra i dettagli
-            details = get_detail_data(selected_row['WOID'])
-            
-            # Crea due colonne per i dettagli
-            col1, col2 = st.columns(2)
-            
-            # Mostra i dettagli nelle colonne
-            for key, value in details.items():
-                with col1:
-                    st.write(f"**{key}:**")
-                with col2:
-                    st.write(value)
-            
-            # Puoi aggiungere altri elementi Streamlit qui
-            st.write("---")
-            st.write("Altri dettagli o grafici possono essere aggiunti qui")
+        
+        # Creiamo un container per i dettagli
+        detail_container = st.container()
+        
+        with detail_container:
+            with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
+                # Recupera e mostra i dettagli
+                details = {
+                    'WOID': selected_row['WOID'],
+                    'Status': selected_row['STATUS'],
+                    'Type': selected_row['TYPE'],
+                    'Data Inserimento': selected_row['INSDATE'],
+                    'Titolo': selected_row['TITLE']
+                }
+                
+                # Crea due colonne per i dettagli
+                col1, col2 = st.columns(2)
+                
+                # Mostra i dettagli nelle colonne
+                for key, value in details.items():
+                    with col1:
+                        st.write(f"**{key}:**")
+                    with col2:
+                        st.write(value)
+                
+                st.write("---")
+                st.write("Dettagli aggiuntivi del Work Order")
 
     workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
