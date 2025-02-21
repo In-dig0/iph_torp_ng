@@ -460,6 +460,7 @@ def manage_workorder(conn):
     icons=["🔄", "✏️", "🎯"], 
     menu_icon="cast", default_index=0, orientation="horizontal"
     )
+    st.write(f"You have selecte option {navbar_h}")
 
     # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
