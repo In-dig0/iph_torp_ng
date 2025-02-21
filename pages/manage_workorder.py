@@ -452,15 +452,14 @@ def manage_workorder(conn):
     st.session_state.grid_data = filtered_data
 
     # Display grid and handle selection
-    navbar_h_options = ["Refresh", "WO Header", "WO Phases"]
-    navbar_h = option_menu(None, options=navbar_h_options, 
-    icons=['house', 'cloud-upload', "list-task", 'gear'], 
-    menu_icon="cast", default_index=0, orientation="horizontal"
-    )
     
     st.subheader(":orange[Work Order list]")
     st.session_state.grid_response = create_grid(st.session_state.grid_data)
-
+    navbar_h_options = ["Refresh", "WO Header", "WO Phases"]
+    navbar_h = option_menu(None, options=navbar_h_options, 
+    icons=["🔄", "✏️", "🎯"], 
+    menu_icon="cast", default_index=0, orientation="horizontal"
+    )
 
     # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
