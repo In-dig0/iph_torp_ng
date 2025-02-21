@@ -395,8 +395,14 @@ def manage_workorder(conn):
     df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
     df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
     df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
-    df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == st.session_state.df_workorders['REQID']]["DUEDATE_TD"]
+    #df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == st.session_state.df_workorders['REQID']]["DUEDATE_TD"]
     
+    df_workorder_grid = pd.merge(
+        st.session_state.df_workorders,
+        st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
+        on='REQID',
+        how='left'
+    )
 
     cellStyle = JsCode("""
         function(params) {
