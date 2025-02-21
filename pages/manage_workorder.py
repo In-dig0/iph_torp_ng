@@ -178,7 +178,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             )
 
             wo_title = st.text_input(
-                        label=":orange[Title]", 
+                        label=":orange[Title](:red[*])", 
                         value=wo_title_default, 
                         disabled=False
             )
