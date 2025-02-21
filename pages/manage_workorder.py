@@ -328,6 +328,83 @@ def reset_application_state():
 
 def manage_workorder(conn):
 
+###################################################################
+    def create_grid():
+        grid_builder = GridOptionsBuilder.from_dataframe(df_workorder_grid)
+        
+        # Configurazione base (come nel tuo codice originale)
+        grid_builder.configure_default_column(
+            resizable=True,
+            filterable=True,
+            sortable=True,
+            editable=False,
+            enableRowGroup=False
+        )
+        
+        # Configurazione Master Detail
+        grid_builder.configure_grid_options(
+            masterDetail=True,
+            detailRowHeight=200,
+            detailCellRendererParams={
+                "detailGridOptions": {
+                    "columnDefs": [
+                        {"field": "field1"},
+                        {"field": "field2"},
+                        # Definisci le colonne per la griglia di dettaglio
+                    ],
+                    "defaultColDef": {
+                        "flex": 1
+                    }
+                },
+                "getDetailRowData": "getDetailRowData"
+            }
+        )
+        
+        # Resto delle configurazioni come nel tuo codice
+        grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
+        grid_builder.configure_grid_options(domLayout='normal')
+        grid_builder.configure_column("WOID", cellStyle=cellStyle)
+        grid_builder.configure_selection(
+            selection_mode='single',
+            use_checkbox=True,
+            header_checkbox=True
+        )
+        
+        # JavaScript custom per gestire i dettagli
+        js_code = """
+        function getDetailRowData(params) {
+            // Qui puoi personalizzare i dati da mostrare nel dettaglio
+            return {
+                data: [
+                    {
+                        field1: 'Dettaglio 1 per ' + params.data.WOID,
+                        field2: 'Altro dettaglio'
+                    }
+                    // Aggiungi altri dati secondo necessità
+                ]
+            };
+        }
+        """
+        
+        grid_options = grid_builder.build()
+        grid_options['detailRowHeight'] = 200
+        grid_options['getDetailRowData'] = js_code
+        
+        return AgGrid(
+            st.session_state.grid_data,
+            gridOptions=grid_options,
+            allow_unsafe_jscode=True,
+            theme="balham",
+            fit_columns_on_grid_load=False,
+            update_mode=GridUpdateMode.MODEL_CHANGED,
+            data_return_mode=DataReturnMode.AS_INPUT,
+            key="main_grid"
+        )
+
+
+####################################################################
+
+
     # Initialize session state
     modules.sqlite_db.initialize_session_state(conn)
     if "grid_data" not in st.session_state:
