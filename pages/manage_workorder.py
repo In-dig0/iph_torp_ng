@@ -475,16 +475,21 @@ def manage_workorder(conn):
     
     if navbar_h == "Refresh":
         reset_application_state()
-        st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal databas
-    elif navbar_h == "WO Header":
-        st.subheader(":orange[Work Order detail]")
+        st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
+    elif navbar_h == "WO Header" or navbar_h == "WO Phases":
         selected_rows_df = st.session_state.grid_response['selected_rows']
-        selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
-        show_workorder_dialog(selected_row_dict, conn)
-    elif navbar_h == "WO Phases":
-        st.subheader(":orange[Work Order phase]")
-        selected_rows_df = st.session_state.grid_response['selected_rows']
-        selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
+        
+        if selected_rows_df is None or len(selected_rows_df) == 0:
+            st.warning("Per favore seleziona una riga dalla griglia")
+            return
+        
+        if navbar_h == "WO Header":
+            st.subheader(":orange[Work Order detail]")
+            selected_row_dict = selected_rows_df.iloc[0].to_dict()
+            show_workorder_dialog(selected_row_dict, conn)
+        else:  # WO Phases
+            st.subheader(":orange[Work Order phase]")
+            selected_row_dict = selected_rows_df.iloc[0].to_dict()
     
     # # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     # # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
