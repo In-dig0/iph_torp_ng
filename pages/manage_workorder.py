@@ -245,7 +245,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_time_um = "H" 
 
             filtered_woassignedto = st.session_state.df_woassignedto[
-            (st.session_state.df_woassignedto['WOID'] == woid) & 
+            (st.session_state.df_woassignedto['WOID'] == wo_id) & 
             (st.session_state.df_woassignedto['TDTLID'] == wo_tdtl_code)
             ]  
                 
