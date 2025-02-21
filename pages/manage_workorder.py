@@ -29,7 +29,7 @@ def show_workorder_dialog(selected_row_dict, conn):
     popup_title = f"Request {wo_reqid}" 
 
     # Creazione di un contenitore per la sezione di modifica
-    with st.container():
+    with st.expander(f"Work Order {selected_row_dict['WOID']} Details"):
         #@st.dialog(popup_title, width="large")
         def dialog_content():
             st.markdown(
