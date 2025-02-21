@@ -23,10 +23,10 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
-    woid = selected_row_dict["WOID"]
+    wo_nr = selected_row_dict["WOID"]
     wo_reqid = selected_row_dict["REQID"]
     wo_status_default = selected_row_dict["STATUS"]
-    wo_title = selected_row_dict["TITLE"]
+    wo_title_default = selected_row_dict["TITLE"]
     popup_title = f"Request {wo_reqid}" 
 
     # Creazione di un contenitore per la sezione di modifica
@@ -171,15 +171,15 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 default_indices = []
 
-            wo_nr = st.text_input(
+            wo_id = st.text_input(
                         label="orange[Workorer ID]", 
-                        value=woid, 
+                        value=wo_nr, 
                         disabled=True
             )
 
             wo_title = st.text_input(
                         label="orange[Title]", 
-                        value=wo_title, 
+                        value=wo_title_default, 
                         disabled=False
             )
 
