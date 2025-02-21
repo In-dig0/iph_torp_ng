@@ -300,7 +300,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                     if success:
                         st.session_state.grid_refresh = True
                         st.session_state.grid_response = None
-                        st.success(f"Work order {woid} updated successfully!")
+                        st.success(f"Work order {wo_id} updated successfully!")
                         st.session_state.df_workorder = modules.sqlite_db.load_workorders_data(conn)  # Ricarica i dati dal database
                         st.session_state.need_refresh = True
                         time.sleep(3)
