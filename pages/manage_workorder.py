@@ -28,7 +28,7 @@ def show_workorder_dialog(selected_row_dict, conn):
     wo_title = selected_row_dict["TITLE"]
     popup_title = f"Request {wo_reqid}" 
 
-    @st.dialog(popup_title, width="large")
+    #@st.dialog(popup_title, width="large")
     def dialog_content():
         st.markdown(
             """
