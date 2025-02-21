@@ -516,9 +516,9 @@ def manage_workorder(conn):
     # Aggiungiamo del debug per vedere cosa contiene grid_response
     st.write("Debug - Selected Rows:", grid_response.get('selected_rows', []))
 
-    # Mostra i dettagli se una riga è selezionata
-    if grid_response.get('selected_rows'):  # Uso .get() per sicurezza
-        selected_row = grid_response['selected_rows'][0]
+    # Verifica se ci sono righe selezionate
+    if hasattr(grid_response, 'selected_rows') and grid_response.selected_rows:
+        selected_row = grid_response.selected_rows[0]  # Prendi la prima riga selezionata
         
         # Creiamo un container per i dettagli
         detail_container = st.container()
