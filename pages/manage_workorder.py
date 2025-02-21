@@ -468,7 +468,7 @@ def manage_workorder(conn):
     
     navbar_h_options = ["Home", "Refresh", "WO Header", "WO Phases"]
     navbar_h = option_menu(None, options=navbar_h_options, 
-    icons=['house','loop','book','activity'], 
+    icons=['house','play','book','activity'], 
     menu_icon="cast", default_index=0, orientation="horizontal"
     )
     #st.write(f"You have selecte option {navbar_h}")
