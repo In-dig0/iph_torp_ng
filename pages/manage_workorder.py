@@ -4,6 +4,7 @@ import datetime
 import time
 from typing import Optional, Tuple, Dict, List
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
+from streamlit_option_menu import option_menu
 # Internal app module
 import modules.servant
 import modules.sqlite_db
@@ -451,6 +452,12 @@ def manage_workorder(conn):
     st.session_state.grid_data = filtered_data
 
     # Display grid and handle selection
+    navbar_h_options = ["Refresh", "WO Header", "WO Phases"]
+    navbar_h = option_menu(None, options=navbar_h_options, 
+    icons=['house', 'cloud-upload', "list-task", 'gear'], 
+    menu_icon="cast", default_index=0, orientation="horizontal"
+    )
+    
     st.subheader(":orange[Work Order list]")
     st.session_state.grid_response = create_grid(st.session_state.grid_data)
 
