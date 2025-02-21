@@ -23,7 +23,7 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
-    wo_nr = selected_row_dict["WOID"]
+    wo_id = selected_row_dict["WOID"]
     wo_reqid = selected_row_dict["REQID"]
     wo_status_default = selected_row_dict["STATUS"]
     wo_title_default = selected_row_dict["TITLE"]
@@ -76,7 +76,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                     st.error(f"Errore caricamento dati df_woassignedto: {e}")
                     st.stop()
 
-            wo_description_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["DESCRIPTION"]
+            wo_description_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["DESCRIPTION"]
             if not wo_description_filtered.empty:
                 wo_description_default = wo_description_filtered.values[0]
 
@@ -86,7 +86,7 @@ def show_workorder_dialog(selected_row_dict, conn):
 
             #woid = st.session_state.df_workorders[st.session_state.df_workorders["REQID"] == reqid]["WOID"]
             wo_type_options=["Standard", "APQP Project"]  #APQP -> ADVANCED PRODUCT QUALITY PLANNING"  
-            wo_type_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["TYPE"]
+            wo_type_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["TYPE"]
             if not wo_type_filtered.empty:
                 wo_type_default = wo_type_filtered.values[0]
                 wo_type_index = wo_type_options.index(wo_type_default)
@@ -94,7 +94,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 wo_type_index = 0  
 
             wo_proj_class_options = ["", "OEM", "OTHER"]
-            wo_proj_class_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["PROJ_CLASS"]
+            wo_proj_class_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["PROJ_CLASS"]
             if not wo_proj_class_filtered.empty:
                 wo_proj_class_default = wo_proj_class_filtered.values[0]
                 wo_proj_class_index = wo_proj_class_options.index(wo_proj_class_default)
@@ -102,7 +102,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 wo_proj_class_index = None  # O un valore di default appropriato
 
             # Gestione della data di inizio con None come default
-            wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["STARTDATE"]
+            wo_startdate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["STARTDATE"]
 
             if not wo_startdate_filtered.empty:
                 start_date_value = wo_startdate_filtered.values[0]
@@ -120,7 +120,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 wo_startdate_default = None
 
 
-            wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["ENDDATE"]
+            wo_enddate_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["ENDDATE"]
             if not wo_enddate_filtered.empty:
                 end_date_value = wo_enddate_filtered.values[0]
                 # Controllo specifico per "EMPTY STRING" o stringa vuota
@@ -136,7 +136,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 wo_enddate_default = None
 
-            wo_timeqty_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["TIME_QTY"]
+            wo_timeqty_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["TIME_QTY"]
             if not wo_timeqty_filtered.empty:
                 wo_timeqty_default = float(wo_timeqty_filtered.iloc[0])  # Converti a float!
                 min_value = 0.0 # Valore minimo predefinito come float
@@ -171,9 +171,9 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 default_indices = []
 
-            wo_id = st.text_input(
+            wo_nr = st.text_input(
                         label="orange[Workorer ID]", 
-                        value=wo_nr, 
+                        value=wo_id, 
                         disabled=True
             )
 
@@ -281,7 +281,7 @@ def show_workorder_dialog(selected_row_dict, conn):
 
             if st.button("Save", type="primary", disabled=disable_save_button, key="wo_save_button"):
                 wo = {
-                    "woid": woid,
+                    "woid": wo_id,
                     "tdtlid": wo_tdtl_code,
                     "type": wo_type,
                     "title": wo_title,  
