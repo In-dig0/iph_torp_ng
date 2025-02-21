@@ -36,22 +36,6 @@ def show_workorder_dialog(selected_row_dict, conn):
             st.markdown(
                 """
                 <style>
-                div[data-testid="stTextInput"] > div > div > input:not([disabled]) {
-                    color: #28a745;
-                    border: 2px solid #28a745;
-                    -webkit-text-fill-color: #28a745 !important;
-                    font-weight: bold;
-                }
-
-                div[data-testid="stTextInput"] > div > div input[disabled] {
-                    color: #6c757d !important;
-                    opacity: 1 !important;
-                    -webkit-text-fill-color: #6c757d !important;
-                    background-color: #e9ecef !important;
-                    border: 1px solid #ced4da !important;
-                    font-style: italic;
-                }
-
                 .stSelectbox > div > div > div > div {
                     color: #007bff;
                 }
@@ -79,9 +63,6 @@ def show_workorder_dialog(selected_row_dict, conn):
             wo_description_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["DESCRIPTION"]
             if not wo_description_filtered.empty:
                 wo_description_default = wo_description_filtered.values[0]
-
-            #st.divider()
-            #st.subheader(f"Work Order {woid}")
 
 
             #woid = st.session_state.df_workorders[st.session_state.df_workorders["REQID"] == reqid]["WOID"]
@@ -266,7 +247,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             
             wo_sequence = ""  # Valore di default per la sequenza
             wo_req_note_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["NOTE_TD"]
-            wo_req_duedate_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["DUEDATE_TD"]
+
             
             if (wo_type == wo_type_default and 
                 wo_assignedto == wo_assignedto_default_names and 
@@ -414,6 +395,8 @@ def manage_workorder(conn):
     df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
     df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
     df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
+    df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["DUEDATE_TD"]
+    
 
     cellStyle = JsCode("""
         function(params) {
