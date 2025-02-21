@@ -362,11 +362,20 @@ def create_workitem(conn)-> None:
     previus_xdays = datetime.now() - timedelta(days=10)
     previus_xdays = previus_xdays.date()
 
+    # if "df_out" not in st.session_state:
+    #     # Esegui il filtro
+    #     st.session_state.df_out = st.session_state.df_workitems[
+    #         st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
+    #     ].copy()  # .copy() is important
+
     if "df_out" not in st.session_state:
-        # Esegui il filtro
-        st.session_state.df_out = st.session_state.df_workitems[
-            st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
-        ].copy()  # .copy() is important
+    # Prima converti la colonna in datetime
+        st.session_state.df_workitems["REFDATE"] = pd.to_datetime(st.session_state.df_workitems["REFDATE"])
+    
+    # Poi esegui il filtro
+    st.session_state.df_out = st.session_state.df_workitems[
+        st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
+    ].copy()
 
     # Reload workitems if needed
     if 'reload_needed' in st.session_state and st.session_state.reload_needed:
