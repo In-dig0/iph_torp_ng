@@ -547,8 +547,10 @@ def manage_workorder(conn):
                 st.write("---")
                 st.write("Dettagli aggiuntivi del Work Order")
 
-    workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
-    workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
+    # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
+    # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
+    workorder_button_disable = False
+    workitem_button_disable = False
 
     # ... (Pulsanti e chiamate di dialogo)
     col1, col2, col3 = st.columns(3)
