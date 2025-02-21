@@ -334,21 +334,6 @@ def reset_application_state():
 
 def manage_workorder(conn):
 
-###################################################################
-
-    def get_detail_data(woid):
-        """
-        Funzione che recupera i dati di dettaglio per un determinato WOID.
-        Personalizza questa funzione in base ai tuoi dati.
-        """
-        # Esempio: potresti fare una query al database qui
-        detail_data = {
-            'Descrizione': f'Dettagli per il work order {woid}',
-            'Note': 'Informazioni aggiuntive...',
-            # Aggiungi altri campi secondo necessità
-        }
-        return detail_data
-
     def create_grid(df):
         grid_builder = GridOptionsBuilder.from_dataframe(df)
         
@@ -385,9 +370,6 @@ def manage_workorder(conn):
             data_return_mode=DataReturnMode.AS_INPUT,
             key="main_grid"
         )
-
-
-####################################################################
 
 
     modules.sqlite_db.initialize_session_state(conn)
