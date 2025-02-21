@@ -398,7 +398,7 @@ def manage_workorder(conn):
     #df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == st.session_state.df_workorders['REQID']]["DUEDATE_TD"]
     
     df_workorder_grid = pd.merge(
-        st.session_state.df_workorders,
+        df_workorder_grid,
         st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
         on='REQID',
         how='left'
