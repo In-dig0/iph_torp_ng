@@ -171,7 +171,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 default_indices = []
 
-            wo_nr = st.selectbox(
+            wo_nr = st.text_input(
                         label="orange[Workorer ID]", 
                         value=woid, 
                         disabled=True
