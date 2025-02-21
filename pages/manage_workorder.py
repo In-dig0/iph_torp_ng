@@ -456,9 +456,9 @@ def manage_workorder(conn):
     st.subheader(":orange[Work Order list]")
     st.session_state.grid_response = create_grid(st.session_state.grid_data)
     
-    navbar_h_options = ["Refresh", "WO Header", "WO Phases"]
+    navbar_h_options = ["Home", "Refresh", "WO Header", "WO Phases"]
     navbar_h = option_menu(None, options=navbar_h_options, 
-    icons=["🔄", "✏️", "🎯"], 
+    icons=['house','refresh','book','activity'], 
     menu_icon="cast", default_index=0, orientation="horizontal"
     )
     st.write(f"You have selecte option {navbar_h}")
@@ -467,10 +467,12 @@ def manage_workorder(conn):
         reset_application_state()
         st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal databas
     elif navbar_h == "WO Header":
+        st.subheader(":orange[Work Order detail")
         selected_rows_df = st.session_state.grid_response['selected_rows']
         selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
         show_workorder_dialog(selected_row_dict, conn)
     elif navbar_h == "WO Phases":
+        st.subheader(":orange[Work Order phase]")
         selected_rows_df = st.session_state.grid_response['selected_rows']
         selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
     
