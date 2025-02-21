@@ -20,6 +20,24 @@ STATUS_ASSIGNED = "ASSIGNED"
 REQ_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 
+def show_wo_phases_dialog(selected_row_dict, conn):
+    
+    st.write(f"Number of workitems: `{len(df_to_display)}`")
+    
+    df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
+
+    st.dataframe(
+            df_phases_wo, 
+            use_container_width=True, 
+            hide_index=True#,
+            # column_order=["REFDATE", 
+            #                 "WOID", 
+            #                 "TDSP_DESC", 
+            #                 #"TSKGRL1_DESC", 
+            #                 "TSKGRL2_DESC", 
+            #                 "TIME_QTY", 
+            #                 "TIME_UM"]
+            )
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
@@ -395,8 +413,7 @@ def manage_workorder(conn):
     df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
     df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
     df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
-    #df_workorder_grid["DUEDATE_TD"] = st.session_state.df_requests[st.session_state.df_requests["REQID"] == st.session_state.df_workorders['REQID']]["DUEDATE_TD"]
-    
+        
     df_workorder_grid = pd.merge(
         df_workorder_grid,
         st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
@@ -479,6 +496,7 @@ def manage_workorder(conn):
         else:  # WO Phases
             st.subheader(":orange[Work Order phase]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
+            show_wo_phases_dialog(selected_row_dict, conn)
     
     # # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
     # # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
