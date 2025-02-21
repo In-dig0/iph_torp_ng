@@ -310,6 +310,29 @@ def load_permission_data(conn):
     return df_permission
 
 
+def load_wo_phases_data(conn):
+    """ Load TORP_WO_PHASES records into df """    
+    
+    try:
+        df_wo_phases = pd.read_sql_query("""
+            SELECT 
+                A.woid AS WOID, 
+                A.tdtlid AS TDTLID,
+                A.phase_code AS PHASE_CODE,
+                A.status AS STATUS,
+                A.startdate AS STARDATE,
+                A.endate AS ENDDATE,
+                A.progress AS PROGRESS
+            FROM TORP_WO_PHASES AS A
+            ORDER by woid
+            """, conn)
+    except Exception as errMsg:
+        st.error(f"**ERROR load data from TORP_WO_PHASES: \n{errMsg}", icon="🚨")
+        return None
+    
+    return df_wo_phases
+
+
 def load_requests_data(conn):
     """ Load TORP_REQUESTS records into df """    
 
@@ -1049,6 +1072,7 @@ def initialize_session_state(conn): #passo la connessione
         'df_lk_category_detail': load_lk_category_detail_data,
         'df_lk_pline_tdtl': load_lk_pline_tdtl_data,
         'df_permission': load_permission_data,
+        'df_wo_phases': load_wo_phases_data,
         'df_detail': load_detail_data,
         'df_requests': load_requests_data,
         'df_reqassignedto': load_reqassignedto_data,
