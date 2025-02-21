@@ -517,7 +517,7 @@ def manage_workorder(conn):
     st.write("Debug - Selected Rows:", grid_response.get('selected_rows', []))
 
     # Aggiungiamo debug per vedere cosa riceviamo
-    st.write("Debug - Tipo di grid_response:", type(grid_response))
+    # st.write("Debug - Tipo di grid_response:", type(grid_response))
 
     # Verifica se ci sono righe selezionate
     if isinstance(grid_response, dict) and 'selected_rows' in grid_response:
