@@ -368,14 +368,29 @@ def create_workitem(conn)-> None:
     #         st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
     #     ].copy()  # .copy() is important
 
-    if "df_out" not in st.session_state:
-    # Prima converti la colonna in datetime
-        st.session_state.df_workitems["REFDATE"] = pd.to_datetime(st.session_state.df_workitems["REFDATE"])
+    # if "df_out" not in st.session_state:
+    # # Prima converti la colonna in datetime
+    #     st.session_state.df_workitems["REFDATE"] = pd.to_datetime(st.session_state.df_workitems["REFDATE"])
     
-    # Poi esegui il filtro
-    st.session_state.df_out = st.session_state.df_workitems[
-        st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
-    ].copy()
+    # # Poi esegui il filtro
+    # st.session_state.df_out = st.session_state.df_workitems[
+    #     st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
+    # ].copy()
+
+
+    if "df_out" not in st.session_state:
+        # Converti la colonna in datetime, gestendo eventuali errori
+        st.session_state.df_workitems["REFDATE"] = pd.to_datetime(st.session_state.df_workitems["REFDATE"], errors='coerce')
+        
+        # Verifica la presenza di valori NaT
+        if st.session_state.df_workitems["REFDATE"].isna().sum() > 0:
+            print("Attenzione: ci sono valori non convertibili nella colonna REFDATE")
+        
+        # Filtra i dati
+        st.session_state.df_out = st.session_state.df_workitems[
+            st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays
+        ].copy()
+
 
     # Reload workitems if needed
     if 'reload_needed' in st.session_state and st.session_state.reload_needed:
