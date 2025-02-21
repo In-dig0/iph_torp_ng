@@ -172,13 +172,13 @@ def show_workorder_dialog(selected_row_dict, conn):
                 default_indices = []
 
             wo_nr = st.text_input(
-                        label="orange[Workorer ID]", 
+                        label=":orange[Workorer ID]", 
                         value=wo_id, 
                         disabled=True
             )
 
             wo_title = st.text_input(
-                        label="orange[Title]", 
+                        label=":orange[Title]", 
                         value=wo_title_default, 
                         disabled=False
             )
