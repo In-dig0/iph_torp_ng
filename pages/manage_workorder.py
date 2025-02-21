@@ -76,15 +76,13 @@ def show_workorder_dialog(selected_row_dict, conn):
                     st.error(f"Errore caricamento dati df_woassignedto: {e}")
                     st.stop()
 
-            st.text_input(label="Request title", 
-                    value=wo_title, 
-                    disabled=True)       # Usa selected_row_dict
             wo_description_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == woid]["DESCRIPTION"]
             if not wo_description_filtered.empty:
                 wo_description_default = wo_description_filtered.values[0]
 
-            st.divider()
-            st.subheader(f"Work Order {woid}")
+            #st.divider()
+            #st.subheader(f"Work Order {woid}")
+
 
             #woid = st.session_state.df_workorders[st.session_state.df_workorders["REQID"] == reqid]["WOID"]
             wo_type_options=["Standard", "APQP Project"]  #APQP -> ADVANCED PRODUCT QUALITY PLANNING"  
@@ -173,7 +171,10 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 default_indices = []
 
-            
+            st.text_input(label="Request title", 
+                    value=wo_title, 
+                    disabled=True)
+                    
             wo_tdtl_name = st.selectbox(
                 label=":orange[Tech Department Team Leader](:red[*])",
                 options=tdtl_username_list,
@@ -257,6 +258,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             
             wo_sequence = ""  # Valore di default per la sequenza
             wo_req_note_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["NOTE_TD"]
+            wo_req_duedate_td = st.session_state.df_requests[st.session_state.df_requests["REQID"] == wo_reqid]["DUEDATE_TD"]
             
             if (wo_type == wo_type_default and 
                 wo_assignedto == wo_assignedto_default_names and 
