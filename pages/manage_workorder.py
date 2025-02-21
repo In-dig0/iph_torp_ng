@@ -171,10 +171,18 @@ def show_workorder_dialog(selected_row_dict, conn):
             else:
                 default_indices = []
 
-            st.text_input(label="Request title", 
-                    value=wo_title, 
-                    disabled=True)
-                    
+            wo_nr = st.st.selectbox(
+                        label="orange[Workorer ID]", 
+                        value=woid, 
+                        disabled=True
+            )
+
+            wo_title = st.text_input(
+                        label="orange[Title]", 
+                        value=wo_title, 
+                        disabled=False
+            )
+
             wo_tdtl_name = st.selectbox(
                 label=":orange[Tech Department Team Leader](:red[*])",
                 options=tdtl_username_list,
