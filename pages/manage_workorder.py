@@ -414,27 +414,6 @@ def manage_workorder(conn):
             return null;
         }
         """)
-    # grid_builder = GridOptionsBuilder.from_dataframe(df_workorder_grid)
-    # # makes columns resizable, sortable and filterable by default
-    # grid_builder.configure_default_column(
-    #     resizable=True,
-    #     filterable=True,
-    #     sortable=True,
-    #     editable=False,
-    #     enableRowGroup=False
-    # )
-    # # Enalble pagination
-    # grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-    # grid_builder.configure_grid_options(domLayout='normal')
-    # grid_builder.configure_column("WOID", cellStyle=cellStyle)
-    # grid_builder.configure_selection(
-    # selection_mode='single',     # Enable multiple row selection
-    # use_checkbox=True,             # Show checkboxes for selection
-    # header_checkbox=True
-    # )
-    # grid_options = grid_builder.build()
-    # # List of available themes
-    # available_themes = ["streamlit", "alpine", "balham", "material"]
     
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
@@ -468,45 +447,6 @@ def manage_workorder(conn):
     if tdtl_filter: 
         filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter] 
     st.session_state.grid_data = filtered_data
-
-    # # Display grid
-    # st.subheader(":orange[Work Order list]")
-    # grid_response = create_grid(st.session_state.grid_data)
-
-    # # # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
-    # # st.session_state.grid_response = AgGrid(
-    # #     st.session_state.grid_data,
-    # #     gridOptions=grid_options,
-    # #     allow_unsafe_jscode=True,
-    # #     theme=available_themes[2],
-    # #     fit_columns_on_grid_load=False,
-    # #     update_mode=GridUpdateMode.MODEL_CHANGED,
-    # #     data_return_mode=DataReturnMode.AS_INPUT,
-    # #     key="main_grid"
-    # # )
-
-
-    # selected_rows = st.session_state.grid_response['selected_rows']
-    # # Mostra i dettagli se una riga è selezionata
-    # if grid_response['selected_rows']:
-    #     selected_row = grid_response['selected_rows'][0]
-    #     with st.expander(f"Dettagli per Work Order: {selected_row['WOID']}", expanded=True):
-    #         # Recupera e mostra i dettagli
-    #         details = get_detail_data(selected_row['WOID'])
-            
-    #         # Crea due colonne per i dettagli
-    #         col1, col2 = st.columns(2)
-            
-    #         # Mostra i dettagli nelle colonne
-    #         for key, value in details.items():
-    #             with col1:
-    #                 st.write(f"**{key}:**")
-    #             with col2:
-    #                 st.write(value)
-            
-    #         # Puoi aggiungere altri elementi Streamlit qui
-    #         st.write("---")
-    #         st.write("Altri dettagli o grafici possono essere aggiunti qui")
 
     # Display grid and handle selection
     st.subheader(":orange[Work Order list]")
