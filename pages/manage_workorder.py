@@ -456,7 +456,7 @@ def manage_workorder(conn):
     
     wo_tdtl_options = df_workorder_grid['TDTL_NAME'].drop_duplicates().sort_values()
     tdtl_filter = st.sidebar.selectbox(
-        ":orange[TDTL Id]", 
+        ":orange[TD Team Leader]", 
         wo_tdtl_options, 
         index=None,
         key='tdtl_value'
