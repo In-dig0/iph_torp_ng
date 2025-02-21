@@ -467,7 +467,7 @@ def manage_workorder(conn):
         reset_application_state()
         st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal databas
     elif navbar_h == "WO Header":
-        st.subheader(":orange[Work Order detail")
+        st.subheader(":orange[Work Order detail]")
         selected_rows_df = st.session_state.grid_response['selected_rows']
         selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
         show_workorder_dialog(selected_row_dict, conn)
