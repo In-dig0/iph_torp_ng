@@ -22,22 +22,22 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 
 def show_wo_phases_dialog(selected_row_dict, conn):
     
-    st.write(f"Number of workitems: `{len(df_to_display)}`")
+    #st.write(f"Number of workitems: `{len(df_to_display)}`")
     
     df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
-
-    st.dataframe(
-            df_phases_wo, 
-            use_container_width=True, 
-            hide_index=True#,
-            # column_order=["REFDATE", 
-            #                 "WOID", 
-            #                 "TDSP_DESC", 
-            #                 #"TSKGRL1_DESC", 
-            #                 "TSKGRL2_DESC", 
-            #                 "TIME_QTY", 
-            #                 "TIME_UM"]
-            )
+    with st.container(border=True):
+        st.dataframe(
+                df_phases_wo, 
+                use_container_width=True, 
+                hide_index=True#,
+                # column_order=["REFDATE", 
+                #                 "WOID", 
+                #                 "TDSP_DESC", 
+                #                 #"TSKGRL1_DESC", 
+                #                 "TSKGRL2_DESC", 
+                #                 "TIME_QTY", 
+                #                 "TIME_UM"]
+                )
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
@@ -493,7 +493,7 @@ def manage_workorder(conn):
             st.subheader(":orange[Work Order detail]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_workorder_dialog(selected_row_dict, conn)
-        else:  # WO Phases
+        elif navbar_h == "WO Phases":
             st.subheader(":orange[Work Order phase]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_phases_dialog(selected_row_dict, conn)
