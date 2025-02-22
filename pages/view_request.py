@@ -1,15 +1,14 @@
 # 3th party packages
 import streamlit as st
 import pandas as pd
-import modules.sqlite_db
-import modules.servant
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
 # Built-in packages
 import re
 import os
 import time
 # Internal app module
-
+import modules.sqlite_db
+import modules.servant
 
 
 def view_requests(conn) -> None:
@@ -150,7 +149,7 @@ def view_requests(conn) -> None:
             st.session_state.grid_data,
             gridOptions=grid_options,
             allow_unsafe_jscode=True,
-            theme=available_themes[2],
+            theme=available_themes[3],
             fit_columns_on_grid_load=False,
             update_mode=GridUpdateMode.MODEL_CHANGED,
             data_return_mode=DataReturnMode.AS_INPUT,
