@@ -16,6 +16,7 @@ def dispaly_home_page():
         unsafe_allow_html=True
         )
     st.markdown(f":grey[Version: {APPVERSION}]")
+    st.markdown("Powered with Streamlit :streamlit:")
     st.divider()
     # Open SQLITE Cloud database
     modules.sqlite_db.open_sqlitecloud_db()
