@@ -705,29 +705,10 @@ def view_attachments(reqid: str, conn)-> None:
                             st.write(f"Base64 PDF: {base64_pdf[:100]}...")  # Stampa i primi 100 caratteri
                             pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
                             st.markdown(pdf_display, unsafe_allow_html=True)
-                            # Debug: Salva il PDF localmente
-                            # with open("debug_pdf.pdf", "wb") as f:
-                            #     f.write(pdf_data)
+                            #Debug: Salva il PDF localmente
+                            with open("debug_pdf.pdf", "wb") as f:
+                                f.write(pdf_data)
                             
-            # for title, pdf_data in attachments:
-            #     if pdf_data:
-            #         #st.subheader(title)
-            #         file_name = f"{reqid}_details.pdf"
-            #         with st.expander(title):  # Expander per ogni allegato
-            #             st.download_button(
-            #                 label=f" Download PDF",
-            #                 data=pdf_data,
-            #                 file_name=file_name,
-            #                 mime="application/pdf",
-            #                 type="primary",
-            #                 icon=":material/download:"
-            #             )
-            #             # Visualizzazione PDF (con controllo visibilità)
-            #             if st.checkbox("Mostra anteprima", key=f"preview_{title}"): # Checkbox univoco per ogni anteprima
-            #                 base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-            #                 pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
-            #                 st.markdown(pdf_display, unsafe_allow_html=True)
-
     except Exception as e:
         st.error(f"Errore nel caricamento degli allegati: {e}")
         import traceback
