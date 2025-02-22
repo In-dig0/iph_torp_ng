@@ -149,7 +149,7 @@ def view_requests(conn) -> None:
             st.session_state.grid_data,
             gridOptions=grid_options,
             allow_unsafe_jscode=True,
-            theme=available_themes[3],
+            theme=available_themes[0],
             fit_columns_on_grid_load=False,
             update_mode=GridUpdateMode.MODEL_CHANGED,
             data_return_mode=DataReturnMode.AS_INPUT,
