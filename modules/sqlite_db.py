@@ -1,10 +1,12 @@
+# 3th party packages
 import sqlitecloud
 import streamlit as st
 import pandas as pd
 from typing import Optional, Tuple, Dict, List
-import base64
+# Built-in packages
 from datetime import datetime, date
 import time
+import base64
 
 # Global constants
 ACTIVE_STATUS = "ACTIVE"
