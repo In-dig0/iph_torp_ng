@@ -8,12 +8,12 @@ def main():
     page_title="TORP WebApp",
     page_icon=":material/local_offer:", 
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="auto"
     )
 
     def login():
 
-        st.header(f":orange[Log in]")
+        st.header(f":orange[TORP Log in]")
         with st.container(border=True):
             user = st.text_input("User")
             password = st.text_input("Password", type="password")
