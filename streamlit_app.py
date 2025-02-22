@@ -21,6 +21,7 @@ def main():
 
             if st.button("Log in"):
                 st.session_state.role = role
+                st.session_state.user = user
                 st.rerun()
 
 

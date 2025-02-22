@@ -744,7 +744,8 @@ def view_attachments(reqid: str, conn) -> None:
                             data=pdf_data,
                             file_name=file_name,
                             mime="application/pdf",
-                            type="primary"
+                            type="primary",
+                            icon=":material/download:"
                         )
                         
                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"):
