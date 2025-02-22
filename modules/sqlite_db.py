@@ -2,7 +2,7 @@
 import sqlitecloud
 import streamlit as st
 import pandas as pd
-from st_pdf_viewer import pdf_viewer
+from streamlit_pdf_viewer import pdf_viewer
 # Built-in packages
 from datetime import datetime, date
 import time
@@ -774,7 +774,7 @@ def view_attachments(reqid: str, conn) -> None:
             cursor.close()
     return True
 
-    
+
 def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str, new_tdtl: list, new_duedate_td: str, conn):
     
     #st.write(f"POINT_U0: reqid = {reqid} - new_status = {new_status} - new_note_td = {new_note_td} - new_tdtl = {new_tdtl}")
