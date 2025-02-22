@@ -15,9 +15,9 @@ def main():
 
         st.header(f":orange[TORP Log in]")
         with st.container(border=True):
-            user = st.text_input("User")
-            password = st.text_input("Password", type="password")
-            role = st.selectbox("Choose your role", ROLES)
+            user = st.text_input(label="User", value="user_demo@iph.it", disabled=True)
+            password = st.text_input(label="Password", value="torp_demo",type="password", disabled=True)
+            role = st.selectbox(label="Choose your role", placeholder="Choose a role")
 
             if st.button("Log in"):
                 st.session_state.role = role
