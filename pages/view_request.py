@@ -266,15 +266,15 @@ def view_requests(conn) -> None:
                 #styled-table th:nth-child(1), #styled-table td:nth-child(1) {
                     text-align: left;
                     width: 30%;
-                    padding: 12px;
+                    padding: 6px;
                 }
                 #styled-table th:nth-child(2), #styled-table td:nth-child(2) {
                     text-align: left;
                     width: 70%;
-                    padding: 12px;
+                    padding: 6px;
                 }
                 #styled-table th, #styled-table td {
-                    padding: 8px;
+                    padding: 4px;
                 }
                 #styled-table th, #styled-table thead tr {
                     background-color: #8ebfde ;
