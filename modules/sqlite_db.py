@@ -669,18 +669,64 @@ def save_attachments(req_id: str, attachments_list: list, conn) -> bool:
     
     return True        
 
-def view_attachments(reqid: str, conn)-> None:
+# def view_attachments(reqid: str, conn)-> None:
+#     """Visualizza gli allegati PDF."""
+
+#     try:
+#         with conn:  # Use a context manager for the connection
+#             cursor = conn.cursor()
+
+#             sql = """
+#                 SELECT title, data 
+#                 FROM TORP_ATTACHMENTS 
+#                 WHERE reqid = :1 
+#             """
+#             cursor.execute(sql, [reqid])
+#             attachments = cursor.fetchall()
+
+#             if not attachments:
+#                 st.info(f"Nessun allegato trovato per la richiesta {reqid}")
+#                 return
+
+#             for title, pdf_data in attachments:
+#                 if pdf_data:
+#                     file_name = f"{reqid}_details.pdf"
+#                     with st.expander(title):  # Expander per ogni allegato
+#                         st.download_button(
+#                             label=f"Download PDF",
+#                             data=pdf_data,
+#                             file_name=file_name,
+#                             mime="application/pdf",
+#                             type="primary",
+#                             icon=":material/download:"
+#                         )
+#                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"):  # Checkbox univoco per ogni anteprima
+#                             base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+#                             st.write(f"Base64 PDF: {base64_pdf[:100]}...")  # Stampa i primi 100 caratteri
+#                             pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
+#                             st.markdown(pdf_display, unsafe_allow_html=True)
+#                             #Debug: Salva il PDF localmente
+#                             with open("debug_pdf.pdf", "wb") as f:
+#                                 f.write(pdf_data)
+                            
+#     except Exception as e:
+#         st.error(f"Errore nel caricamento degli allegati: {e}")
+#         import traceback
+#         st.error(traceback.format_exc())
+#         return False
+#     finally:
+#         if cursor:
+#             cursor.close() # Close the cursor in a finally block
+#     return True
+
+    # Database update functions
+
+def view_attachments(reqid: str, conn) -> None:
     """Visualizza gli allegati PDF."""
-
     try:
-        with conn:  # Use a context manager for the connection
+        with conn:
             cursor = conn.cursor()
-
-            sql = """
-                SELECT title, data 
-                FROM TORP_ATTACHMENTS 
-                WHERE reqid = :1 
-            """
+            sql = "SELECT title, data FROM TORP_ATTACHMENTS WHERE reqid = :1"
             cursor.execute(sql, [reqid])
             attachments = cursor.fetchall()
 
@@ -691,35 +737,42 @@ def view_attachments(reqid: str, conn)-> None:
             for title, pdf_data in attachments:
                 if pdf_data:
                     file_name = f"{reqid}_details.pdf"
-                    with st.expander(title):  # Expander per ogni allegato
+                    with st.expander(title):
                         st.download_button(
-                            label=f"Download PDF",
+                            label="Download PDF",
                             data=pdf_data,
                             file_name=file_name,
                             mime="application/pdf",
-                            type="primary",
-                            icon=":material/download:"
+                            type="primary"
                         )
-                        if st.checkbox("Mostra anteprima", key=f"preview_{title}"):  # Checkbox univoco per ogni anteprima
-                            base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                            st.write(f"Base64 PDF: {base64_pdf[:100]}...")  # Stampa i primi 100 caratteri
-                            pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
-                            st.markdown(pdf_display, unsafe_allow_html=True)
-                            #Debug: Salva il PDF localmente
-                            with open("debug_pdf.pdf", "wb") as f:
+                        
+                        if st.checkbox("Mostra anteprima", key=f"preview_{title}"):
+                            # Salva temporaneamente il PDF
+                            temp_path = f"temp_{file_name}"
+                            with open(temp_path, "wb") as f:
                                 f.write(pdf_data)
                             
+                            # Usa il componente PDF nativo di Streamlit
+                            with open(temp_path, "rb") as f:
+                                pdf_bytes = f.read()
+                                st.pdf(pdf_bytes)
+                            
+                            # Rimuovi il file temporaneo
+                            import os
+                            os.remove(temp_path)
+
     except Exception as e:
         st.error(f"Errore nel caricamento degli allegati: {e}")
         import traceback
         st.error(traceback.format_exc())
         return False
     finally:
-        if cursor:
-            cursor.close() # Close the cursor in a finally block
+        if 'cursor' in locals():
+            cursor.close()
     return True
 
-    # Database update functions
+
+
 def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str, new_tdtl: list, new_duedate_td: str, conn):
     
     #st.write(f"POINT_U0: reqid = {reqid} - new_status = {new_status} - new_note_td = {new_note_td} - new_tdtl = {new_tdtl}")
