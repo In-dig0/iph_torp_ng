@@ -334,7 +334,7 @@ def reset_application_state():
 
 def manage_workorder(conn):
 
-    def create_grid(df):
+    def show_grid(df):
         grid_builder = GridOptionsBuilder.from_dataframe(df)
         
         # Configurazione base delle colonne
@@ -446,7 +446,7 @@ def manage_workorder(conn):
     # Display grid and handle selection
     
     st.subheader(":orange[Work Order list]")
-    st.session_state.grid_response = create_grid(st.session_state.grid_data)
+    st.session_state.grid_response = show_grid(st.session_state.grid_data)
     
     navbar_h_options = ["Home", "Refresh", "WO Header", "WO Phases"]
     navbar_h = option_menu(None, options=navbar_h_options, 
