@@ -2,11 +2,12 @@
 import sqlitecloud
 import streamlit as st
 import pandas as pd
-from typing import Optional, Tuple, Dict, List
+from st_pdf_viewer import pdf_viewer
 # Built-in packages
 from datetime import datetime, date
 import time
 import base64
+from typing import Optional, Tuple, Dict, List
 
 # Global constants
 ACTIVE_STATUS = "ACTIVE"
@@ -748,18 +749,18 @@ def view_attachments(reqid: str, conn) -> None:
                         
                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"):
                             try:
-                                # Converti i dati binari in base64
-                                base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                                # Crea un elemento HTML embedded per visualizzare il PDF
-                                pdf_display = f"""
-                                    <embed
-                                        src="data:application/pdf;base64,{base64_pdf}"
-                                        width="800"
-                                        height="1000"
-                                        type="application/pdf"
-                                    >
-                                """
-                                st.markdown(pdf_display, unsafe_allow_html=True)
+                                # Salva temporaneamente il PDF
+                                temp_path = f"temp_{file_name}"
+                                with open(temp_path, "wb") as f:
+                                    f.write(pdf_data)
+                                
+                                # Usa il viewer PDF
+                                pdf_viewer(temp_path)
+                                
+                                # Rimuovi il file temporaneo
+                                import os
+                                os.remove(temp_path)
+                                
                             except Exception as e:
                                 st.error(f"Errore nella visualizzazione del PDF: {e}")
 
@@ -773,7 +774,7 @@ def view_attachments(reqid: str, conn) -> None:
             cursor.close()
     return True
 
-
+    
 def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str, new_tdtl: list, new_duedate_td: str, conn):
     
     #st.write(f"POINT_U0: reqid = {reqid} - new_status = {new_status} - new_note_td = {new_note_td} - new_tdtl = {new_tdtl}")
