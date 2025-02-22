@@ -747,19 +747,21 @@ def view_attachments(reqid: str, conn) -> None:
                         )
                         
                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"):
-                            # Salva temporaneamente il PDF
-                            temp_path = f"temp_{file_name}"
-                            with open(temp_path, "wb") as f:
-                                f.write(pdf_data)
-                            
-                            # Usa il componente PDF nativo di Streamlit
-                            with open(temp_path, "rb") as f:
-                                pdf_bytes = f.read()
-                                st.pdf(pdf_bytes)
-                            
-                            # Rimuovi il file temporaneo
-                            import os
-                            os.remove(temp_path)
+                            try:
+                                # Converti i dati binari in base64
+                                base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+                                # Crea un elemento HTML embedded per visualizzare il PDF
+                                pdf_display = f"""
+                                    <embed
+                                        src="data:application/pdf;base64,{base64_pdf}"
+                                        width="800"
+                                        height="1000"
+                                        type="application/pdf"
+                                    >
+                                """
+                                st.markdown(pdf_display, unsafe_allow_html=True)
+                            except Exception as e:
+                                st.error(f"Errore nella visualizzazione del PDF: {e}")
 
     except Exception as e:
         st.error(f"Errore nel caricamento degli allegati: {e}")
@@ -770,7 +772,6 @@ def view_attachments(reqid: str, conn) -> None:
         if 'cursor' in locals():
             cursor.close()
     return True
-
 
 
 def update_request(reqid: str, new_status: str, new_note_td: str, new_woid: str, new_tdtl: list, new_duedate_td: str, conn):
