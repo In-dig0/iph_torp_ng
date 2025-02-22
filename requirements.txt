@@ -7,3 +7,4 @@ altair
 streamlit-calendar
 streamlit_card
 streamlit-option-menu
+streamlit-pdf-viewer
