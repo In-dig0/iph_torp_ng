@@ -600,48 +600,48 @@ def save_request(request: dict, conn) -> Tuple[str, int]:
     return next_reqid, True 
 
 
-def load_attachments_from_db(reqid: str, conn):
-    """Visualizza gli allegati PDF."""
+# def load_attachments_from_db(reqid: str, conn):
+#     """Visualizza gli allegati PDF."""
 
-    try:
-        cursor = conn.cursor()
+#     try:
+#         cursor = conn.cursor()
 
-        sql = """
-            SELECT title, data 
-            FROM TORP_ATTACHMENTS 
-            WHERE reqid = :1 
-        """
-        cursor.execute(sql, [reqid])
-        attachments = cursor.fetchall()
+#         sql = """
+#             SELECT title, data 
+#             FROM TORP_ATTACHMENTS 
+#             WHERE reqid = :1 
+#         """
+#         cursor.execute(sql, [reqid])
+#         attachments = cursor.fetchall()
 
-        if not attachments:
-            st.info(f"Nessun allegato trovato per la richiesta {reqid}")
-            return
+#         if not attachments:
+#             st.info(f"Nessun allegato trovato per la richiesta {reqid}")
+#             return
 
-        for title, pdf_data in attachments:
-            if pdf_data:
-                #st.subheader(title)
-                with st.expander(title):  # Expander per ogni allegato
-                    st.download_button(
-                        label=f" Download PDF - {title}",
-                        data=pdf_data,
-                        file_name=f"{title}.pdf",
-                        mime="application/pdf"
-                    )
-                    # Visualizzazione PDF (con controllo visibilità)
-                    if st.checkbox("Mostra anteprima", key=f"preview_{title}"): # Checkbox univoco per ogni anteprima
-                        base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
-                        st.markdown(pdf_display, unsafe_allow_html=True)
+#         for title, pdf_data in attachments:
+#             if pdf_data:
+#                 #st.subheader(title)
+#                 with st.expander(title):  # Expander per ogni allegato
+#                     st.download_button(
+#                         label=f" Download PDF - {title}",
+#                         data=pdf_data,
+#                         file_name=f"{title}.pdf",
+#                         mime="application/pdf"
+#                     )
+#                     # Visualizzazione PDF (con controllo visibilità)
+#                     if st.checkbox("Mostra anteprima", key=f"preview_{title}"): # Checkbox univoco per ogni anteprima
+#                         base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+#                         pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
+#                         st.markdown(pdf_display, unsafe_allow_html=True)
 
-    except Exception as e:
-        st.error(f"Errore nel caricamento degli allegati: {e}")
-        import traceback
-        st.error(traceback.format_exc())
-    finally:
-        if cursor:
-            cursor.close() # Close the cursor in a finally block
-    return True
+#     except Exception as e:
+#         st.error(f"Errore nel caricamento degli allegati: {e}")
+#         import traceback
+#         st.error(traceback.format_exc())
+#     finally:
+#         if cursor:
+#             cursor.close() # Close the cursor in a finally block
+#     return True
 
 
 def save_attachments(req_id: str, attachments_list: list, conn) -> bool:
@@ -696,7 +696,8 @@ def view_attachments(reqid: str, conn)-> None:
                             data=pdf_data,
                             file_name=file_name,
                             mime="application/pdf",
-                            icon="📥"
+                            type="primary",
+                            icon=":material/download:"
                         )
                         # Visualizzazione PDF (con controllo visibilità)
                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"): # Checkbox univoco per ogni anteprima
