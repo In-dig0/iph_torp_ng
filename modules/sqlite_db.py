@@ -702,7 +702,7 @@ def view_attachments(reqid: str, conn)-> None:
                         )
                         if st.checkbox("Mostra anteprima", key=f"preview_{title}"):  # Checkbox univoco per ogni anteprima
                             base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
-                            print(f"Base64 PDF: {base64_pdf[:100]}...")  # Stampa i primi 100 caratteri
+                            st.write(f"Base64 PDF: {base64_pdf[:100]}...")  # Stampa i primi 100 caratteri
                             pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="1000"></iframe>'
                             st.markdown(pdf_display, unsafe_allow_html=True)
                             # Debug: Salva il PDF localmente
