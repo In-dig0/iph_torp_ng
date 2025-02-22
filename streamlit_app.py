@@ -17,7 +17,7 @@ def main():
         with st.container(border=True):
             user = st.text_input(label="User", value="user_demo@iph.it", disabled=True)
             password = st.text_input(label="Password", value="torp_demo",type="password", disabled=True)
-            role = st.selectbox(label="Choose your role", option=ROLES, placeholder="Choose a role")
+            role = st.selectbox(label="Choose your role", options=ROLES, placeholder="Choose a role")
 
             if st.button("Log in"):
                 st.session_state.role = role
