@@ -10,8 +10,8 @@ def dispaly_home_page():
     st.header(f":blue[{APPNAME} Web Application]", divider="grey")
     st.markdown(
         """
-        <h3>A simple web application developed as a POC in order to manage requests<br>
-        to IPH Technical Office.</h3>
+        <h3>A simple web application developed as a POC in order to manage <br>
+        IPH Technical Office requests.</h3>
         """,
         unsafe_allow_html=True
         )

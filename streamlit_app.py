@@ -125,7 +125,7 @@ def main():
         page_dict["TD Specialist"] = td_specialist_pages       
 
     if len(page_dict) > 0:
-        pg = st.navigation({"Account": account_pages} | page_dict)
+        pg = st.navigation({":orange[Account]": account_pages} | page_dict)
     else:
         pg = st.navigation([st.Page(login)])
 
