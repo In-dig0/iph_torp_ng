@@ -323,7 +323,7 @@ def load_wo_phases_data(conn):
                 A.tdtlid AS TDTLID,
                 A.phase_code AS PHASE_CODE,
                 A.status AS STATUS,
-                A.startdate AS STARDATE,
+                A.startdate AS STARTDATE,
                 A.enddate AS ENDDATE,
                 A.progress AS PROGRESS
             FROM TORP_WO_PHASES AS A
@@ -973,8 +973,6 @@ def save_workorder_assignments(woid, tdtl_code, assigned_users, df_users, df_woa
             cursor.close() # Close the cursor in a finally block
 
 
-
-
 def save_workitem(witem: dict, conn) ->  bool:
     """Save request to database and return request number and status"""
     try:
@@ -1118,6 +1116,62 @@ def delete_workitem(witem: dict, conn) ->  bool:
             cursor.close() # Close the cursor in a finally block
 
 
+def insert_wo_phase(row, conn):
+    try:
+        cursor = conn.cursor()
+        insert_query = """
+        INSERT INTO TORP_WO_PHASES (WOID, TDTLID, PHASE_CODE, STATUS, STARTDATE, ENDDATE, PROGRESS)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        conn.execute(insert_query, (
+            row['WOID'],
+            row['TDTLID'],
+            row['PHASE_CODE'],
+            row['STATUS'],
+            row['STARTDATE'],
+            row['ENDDATE'],
+            row['PROGRESS']
+        ))
+    
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        st.error(f"**ERROR inserting data in table TORP_WO_PHASES: \n{e}", icon="🚨")
+        return False
+
+    finally:
+        if cursor:
+            cursor.close() # Close the cursor in a finally block
+
+def update_wo_phase(row, conn):
+    try:
+        cursor = conn.cursor()
+        update_query = """
+        UPDATE TORP_WO_PHASES 
+        SET STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?
+        WHERE WOID = ? AND TDTLID = ? AND PHASE_CODE = ?
+        """
+        conn.execute(update_query, (
+            row['STATUS'],
+            row['STARTDATE'],
+            row['ENDDATE'],
+            row['PROGRESS'],
+            row['WOID'],
+            row['TDTLID'],
+            row['PHASE_CODE']
+        ))
+    
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        st.error(f"**ERROR updating data in table TORP_WO_PHASES: \n{e}", icon="🚨")
+        return False
+
+    finally:
+        if cursor:
+            cursor.close() # Close the cursor in a finally block
 
 
 def initialize_session_state(conn): #passo la connessione
