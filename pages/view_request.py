@@ -1,12 +1,11 @@
 # 3th party packages
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
 # Built-in packages
 import re
 import os
 import time
-# Internal app module
+# App modules
 import modules.sqlite_db
 import modules.servant
 
@@ -66,55 +65,12 @@ def view_requests(conn) -> None:
     df_requests_grid['TITLE'] = st.session_state.df_requests['TITLE']
     df_requests_grid['REQUESTER_NAME'] = st.session_state.df_requests['REQUESTER'].apply(lambda requester_code: modules.servant.get_description_from_code(st.session_state.df_users, requester_code, "NAME"))
 
+
     if st.session_state.grid_refresh:
         st.session_state.grid_data = df_requests_grid.copy()
         st.session_state.grid_refresh = False    
 
-    cellStyle = JsCode("""
-        function(params) {
-            if (params.column.colId === 'REQID') {
-                       return {
-                        'backgroundColor': '#8ebfde',
-                        'color': '#00000',
-                        'fontWeight': 'bold'
-                    };
-            }
-            return null;
-        }
-        """)
 
-    grid_builder = GridOptionsBuilder.from_dataframe(df_requests_grid)
-    # makes columns resizable, sortable and filterable by default
-    grid_builder.configure_default_column(
-        resizable=True,
-        filterable=True,
-        sortable=True,
-        editable=False,
-        enableRowGroup=False
-    )
-    # Enalble pagination
-    grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-#    gb.configure_selection('single', use_checkbox=True)
-    grid_builder.configure_grid_options(domLayout='normal')
-#    grid_builder.configure_pagination(enabled=True, paginationPageSize=5, paginationAutoPageSize=True)
-#    grid_builder.configure_selection(selection_mode="multiple", use_checkbox=True)
-#    grid_builder.configure_side_bar(filters_panel=True)# defaultToolPanel='filters')    
-    
-    # grid_builder.configure_column(
-    # field="INSDATE",
-    # header_name="INSERT DATE",
-    # valueFormatter="value != undefined ? new Date(value).toLocaleString('it-IT', {dateStyle:'short'}): ''",
-    # )
-    grid_builder.configure_column("REQID", cellStyle=cellStyle)   
-    grid_builder.configure_selection(
-    selection_mode='single',     # Enable multiple row selection
-    use_checkbox=False,             # Show checkboxes for selection
-    header_checkbox=True
-    )
-    grid_options = grid_builder.build()
-    # List of available themes
-    available_themes = ["streamlit", "alpine", "balham", "material"]
-    
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
         st.session_state.grid_data = df_requests_grid.copy()  # Copia per evitare modifiche al DataFrame originale
@@ -123,18 +79,16 @@ def view_requests(conn) -> None:
 
     # Sidebar controls - Filters
     st.sidebar.header("Filters")
+
     # Creation of a filter REQUESTERNAME
     ct_requester = df_requests_grid['REQUESTER_NAME'].drop_duplicates().sort_values()
     df_requestername = st.session_state.df_users[st.session_state.df_users["CODE"].isin(ct_requester)]
     option_requestername = df_requestername['NAME'].sort_values()
-    
-    
     option_requestername_list = ct_requester.tolist()
 
     # Get an optional value requester filter
     requestername_filter = st.sidebar.selectbox("Select a Requester Name:", option_requestername_list, index=None)
-    #requester_filter_code = get_code_from_name(df_users, requester_filter, "CODE")
-    
+   
 
     # Filtro e AGGIORNAMENTO DEI DATI (utilizzando la sessione)
     if requestername_filter:
@@ -145,18 +99,7 @@ def view_requests(conn) -> None:
     st.subheader(":orange[Request list]") 
     # Creazione/Aggiornamento della griglia (UNA SOLA VOLTA per ciclo di esecuzione)
     with st.container(border=True):
-        st.session_state.grid_response = AgGrid( # Aggiorna la griglia esistente
-            st.session_state.grid_data,
-            gridOptions=grid_options,
-            allow_unsafe_jscode=True,
-            theme=available_themes[0],
-            fit_columns_on_grid_load=False,
-            update_mode=GridUpdateMode.MODEL_CHANGED,
-            data_return_mode=DataReturnMode.AS_INPUT,
-            key="main_grid"
-        )
-
-
+        st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
         col1, col2, col3 = st.columns([1, 1, 4])
         with col1:
             if st.button("Refresh", type="primary", icon=":material/refresh:"):
@@ -247,11 +190,7 @@ def view_requests(conn) -> None:
         # Formattazione Status in verde
         df_out.loc[df_out["Column name"] == "Status", "Column value"] = df_out.loc[
             df_out["Column name"] == "Status", "Column value"].apply(lambda x: f"<span style='color: green;'>{x}</span>")
-
-        # Convertiamo il DataFrame in HTML con testo allineato a sinistra e senza id riga
-        #html_table = df_out.to_html(escape=False, index=False, classes='mystyle')
-        #table_width = 900  # Adjust this width value as needed
-        
+      
         # Convertiamo il DataFrame in HTML con testo allineato a sinistra e senza id riga
         html_table = df_out.to_html(escape=False, index=False, table_id='styled-table')
 
@@ -277,7 +216,7 @@ def view_requests(conn) -> None:
                     padding: 4px;
                 }
                 #styled-table th, #styled-table thead tr {
-                    background-color: #8ebfde ;
+                    background-color: #f5f5f5 ;
                 }
 
             </style>

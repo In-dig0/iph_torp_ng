@@ -1,10 +1,12 @@
+# 3th party packages
 import streamlit as st
 import pandas as pd
+from streamlit_option_menu import option_menu
+# Built-in packages
 import datetime
 import time
 from typing import Optional, Tuple, Dict, List
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
-# Internal app module
+# App modules
 import modules.servant
 import modules.sqlite_db
 
@@ -16,8 +18,6 @@ STATUS_NEW = "NEW"
 STATUS_WIP = "WIP"
 REQ_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 SEQUENCE_NORMAL = ""
-
-# ... (Caricamento dei dati nello stato della sessione come prima)
 
 def reset_application_state():
     """Reset all session state variables and cached data"""
@@ -44,9 +44,10 @@ def reset_application_state():
 def show_request_dialog(selected_row_dict, req_status_options, update_request_fn, conn):  # Passa un dizionario
     """Visualizza e gestisci la finestra di dialogo di modifica della richiesta."""
 
-    popup_title = f'Richiesta {selected_row_dict["REQID"]}'  # Accedi a REQID direttamente
+    modules.servant.insert_dialog_css()
+    popup_title = f'Request {selected_row_dict["REQID"]}'  # Accedi a REQID direttamente
 
-    @st.dialog(popup_title, width="large")
+    @st.dialog(title=popup_title,width="large")
     def dialog_content():
 
         reqid = selected_row_dict["REQID"] # Usa direttamente il dizionario
@@ -159,37 +160,11 @@ def show_workorder_dialog(selected_row_dict,  # Passa un dizionario
                          save_woassignments_fn, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
 
-    popup_title = f'Richiesta {selected_row_dict["REQID"]}' # Accedi a REQID direttamente
+    modules.servant.insert_dialog_css()
+    popup_title = f'Request {selected_row_dict["REQID"]}' # Accedi a REQID direttamente
 
     @st.dialog(popup_title, width="large")
     def dialog_content():
-        st.markdown(
-            """
-            <style>
-            div[data-testid="stTextInput"] > div > div > input:not([disabled]) {
-                color: #28a745;
-                border: 2px solid #28a745;
-                -webkit-text-fill-color: #28a745 !important;
-                font-weight: bold;
-            }
-
-            div[data-testid="stTextInput"] > div > div input[disabled] {
-                color: #6c757d !important;
-                opacity: 1 !important;
-                -webkit-text-fill-color: #6c757d !important;
-                background-color: #e9ecef !important;
-                border: 1px solid #ced4da !important;
-                font-style: italic;
-            }
-
-            .stSelectbox > div > div > div > div {
-                color: #007bff;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-
         # Caricamento lazy e controllo esplicito *QUI*
         if "df_user" not in st.session_state or st.session_state.df_user is None:
             try:
@@ -209,8 +184,6 @@ def show_workorder_dialog(selected_row_dict,  # Passa un dizionario
         reqid = selected_row_dict["REQID"]  # Usa direttamente il dizionario
         woid = "W" + selected_row_dict["REQID"][1:]
         
-
-        # ... (Resto del contenuto del dialogo, usando selected_row_dict)
         # Display request details
         st.text_input(label="Product Line", value=selected_row_dict['PRLINE_NAME'], disabled=True)  # Usa selected_row_dict
         st.text_input(label="Request title", value=selected_row_dict['TITLE'], disabled=True)       # Usa selected_row_dict
@@ -409,40 +382,6 @@ def manage_request(conn):
     df_requests_grid['TITLE'] = st.session_state.df_requests['TITLE']
     df_requests_grid['REQUESTER_NAME'] = st.session_state.df_requests['REQUESTER'].apply(lambda requester_code: modules.servant.get_description_from_code(st.session_state.df_users, requester_code, "NAME"))
 
-    cellStyle = JsCode("""
-        function(params) {
-            if (params.column.colId === 'REQID') {
-                       return {
-                        'backgroundColor': '#8ebfde',
-                        'color': '#000000',
-                        'fontWeight': 'bold'
-                    };
-            }
-            return null;
-        }
-        """)
-    grid_builder = GridOptionsBuilder.from_dataframe(df_requests_grid)
-    # makes columns resizable, sortable and filterable by default
-    grid_builder.configure_default_column(
-        resizable=True,
-        filterable=True,
-        sortable=True,
-        editable=False,
-        enableRowGroup=False
-    )
-    # Enalble pagination
-    grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-    grid_builder.configure_grid_options(domLayout='normal')
-    grid_builder.configure_column("REQID", cellStyle=cellStyle)
-    grid_builder.configure_selection(
-    selection_mode='single',     # Enable multiple row selection
-    use_checkbox=True,             # Show checkboxes for selection
-    header_checkbox=True
-    )
-    grid_options = grid_builder.build()
-    # List of available themes
-    available_themes = ["streamlit", "alpine", "balham", "material"]
-    
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
         st.session_state.grid_data = df_requests_grid.copy()  # Copia per evitare modifiche al DataFrame originale
@@ -476,50 +415,48 @@ def manage_request(conn):
         filtered_data = filtered_data[filtered_data["PRLINE_NAME"] == pline_filter] 
     st.session_state.grid_data = filtered_data
 
-    # Display grid
-    st.subheader(":orange[Request list]")
+    # Navbar
+    navbar_h_options = ["Home", "Refresh", "Modify Request", "Create Work Order"]
     
-
-    st.session_state.grid_response = AgGrid(
-        st.session_state.grid_data,
-        gridOptions=grid_options,
-        allow_unsafe_jscode=True,
-        theme=available_themes[2],
-        fit_columns_on_grid_load=False,
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        data_return_mode=DataReturnMode.AS_INPUT,
-        key="main_grid"
+    navbar_h = option_menu(None, options=navbar_h_options, 
+        icons=['house','arrow-counterclockwise','ticket-perforated','clipboard-plus'], 
+        menu_icon="cast", default_index=0, orientation="horizontal",
+        styles={
+        "container": {"padding": "0!important", "background-color": "#fafafa"},
+        "icon": {"color": "orange", "font-size": "15px"}, 
+        "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px"},
+        "nav-link-selected": {"background-color": "grey"},
+        }
     )
+    # Create grid
+    st.subheader(":orange[Request list]")
+    st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
 
 
-    selected_rows = st.session_state.grid_response['selected_rows']
-    modify_request_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
-    workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
+    #selected_rows = st.session_state.grid_response['selected_rows']
 
-    # ... (Pulsanti e chiamate di dialogo)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("🔄 Refresh data", type="secondary"):
-            reset_application_state()
-            st.session_state.df_requests = modules.sqlite_db.load_requests_data(conn)  # Ricarica i dati dal database
-            st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)
-            st.session_state.df_woassignedto = modules.sqlite_db.load_woassignedto_data(conn)
-    with col2:
-        if st.button("✏️ Modify Request", type="secondary", disabled=modify_request_button_disable):
-            if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-                selected_rows_df = st.session_state.grid_response['selected_rows']
-                selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
-                show_request_dialog(selected_row_dict, REQ_STATUS_OPTIONS, modules.sqlite_db.update_request, conn)
-            # else:
-            #     st.warning("Please select a request from the grid first.", icon="⚠️")
-    with col3:
-        if st.button("📌 Create Work Oder", type="secondary", disabled=workorder_button_disable):
-            if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-                selected_rows_df = st.session_state.grid_response['selected_rows']
-                selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
-                show_workorder_dialog(selected_row_dict, st.session_state.df_workorders, st.session_state.df_woassignedto, st.session_state.df_users, STATUS_NEW, DEFAULT_DEPT_CODE, REQ_STATUS_OPTIONS, modules.sqlite_db.save_workorder, modules.sqlite_db.save_workorder_assignments, conn)
-            # else:
-            #     st.warning("Please select a request from the grid first.", icon="⚠️")  # Avvisa l'utent# ... (Resto del tuo codice)
+    if navbar_h == "Refresh":
+        reset_application_state()
+        st.session_state.df_requests = modules.sqlite_db.load_requests_data(conn)  # Ricarica i dati dal database
+        st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)
+        st.session_state.df_woassignedto = modules.sqlite_db.load_woassignedto_data(conn)
+
+    elif navbar_h == "Modify Request" or navbar_h == "Create Work Order":
+        selected_rows_df = st.session_state.grid_response['selected_rows']
+        if selected_rows_df is None or len(selected_rows_df) == 0:
+            st.warning("Please select a grid row first!", icon="⚠️")
+            return
+        
+        if navbar_h == "Modify Request":
+            #st.subheader(":orange[Work Order detail]")
+            selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
+            show_request_dialog(selected_row_dict, REQ_STATUS_OPTIONS, modules.sqlite_db.update_request, conn)
+
+        elif navbar_h == "Create Work Order":
+            #st.subheader(":orange[Work Order phase]")
+            selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
+            show_workorder_dialog(selected_row_dict, st.session_state.df_workorders, st.session_state.df_woassignedto, st.session_state.df_users, STATUS_NEW, DEFAULT_DEPT_CODE, REQ_STATUS_OPTIONS, modules.sqlite_db.save_workorder, modules.sqlite_db.save_workorder_assignments, conn)
+
 
 
 def main():

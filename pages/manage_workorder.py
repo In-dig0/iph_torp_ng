@@ -1,11 +1,13 @@
+# 3th party packages
 import streamlit as st
 import pandas as pd
+#from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
+from streamlit_option_menu import option_menu
+# Built-in packages
 import datetime
 import time
 from typing import Optional, Tuple, Dict, List
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode, JsCode, ColumnsAutoSizeMode
-from streamlit_option_menu import option_menu
-# Internal app module
+# App modules
 import modules.servant
 import modules.sqlite_db
 
@@ -21,17 +23,112 @@ REQ_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED
 WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 
 def show_wo_phases_dialog(selected_row_dict, conn):
-    
-    #st.write(f"Number of workitems: `{len(df_to_display)}`")
-    
+    # Ottieni il DataFrame filtrato
     df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
+    
+    # Resetta l'indice e rimuovi la colonna dell'indice se presente
+    df_phases_wo = df_phases_wo.reset_index(drop=True)
+    
+    # Converti le colonne delle date da stringa a datetime
+    df_phases_wo['STARTDATE'] = pd.to_datetime(df_phases_wo['STARTDATE'])
+    df_phases_wo['ENDDATE'] = pd.to_datetime(df_phases_wo['ENDDATE'])
+    
     with st.container(border=True):
+        # Editor dei dati con configurazione aggiuntiva
         edited_df = st.data_editor(
-                        df_phases_wo, 
-                        use_container_width=True, 
-                        hide_index=False,
-                        num_rows="dynamic"
+            df_phases_wo,
+            use_container_width=True,
+            hide_index=True,
+            num_rows="dynamic",
+            column_config={
+                "WOID": st.column_config.TextColumn(
+                    "WOID",
+                    help="Work Order ID",
+                    default=selected_row_dict["WOID"]
+                ),
+                "TDTLID": st.column_config.TextColumn(
+                    "TDTLID",
+                    help="Task Detail ID"
+                ),
+                "PHASE_CODE": st.column_config.SelectboxColumn(
+                    label="PHASE_CODE",
+                    help="Phase Code",
+                    options=[
+                        "01_STUDIO",
+                        "02_PROGETTO",
+                        "03_PROTOTIPO",
+                        "04_VALIDAZIONE",
+                        "05_SERIE"
+                    ]
+                ),
+                "STATUS": st.column_config.SelectboxColumn(
+                    "STATUS",
+                    help="Phase Status",
+                    options=[
+                        "TO_START",
+                        "IN_PROGRESS",
+                        "COMPLETED",
+                        "CANCELLED"
+                    ]
+                ),
+                "STARTDATE": st.column_config.DateColumn(
+                    "STARTDATE",
+                    help="Start Date",
+                    # min_value=datetime(2025, 1, 1),
+                    # max_value=datetime(2025, 12, 31),
+                    format="YYYY-MM-DD"
+                ),
+                "ENDDATE": st.column_config.DateColumn(
+                    "ENDDATE",
+                    help="End Date",
+                    # min_value=datetime(2025, 1, 1),
+                    # max_value=datetime(2025, 12, 31),
+                    format="YYYY-MM-DD"
+                ),
+                "PROGRESS": st.column_config.NumberColumn(
+                    "PROGRESS",
+                    help="Progress (%)",
+                    min_value=0,
+                    max_value=100,
+                    step=5,
+                    default=0
                 )
+            }
+        )
+        
+        if st.button("Save"):
+            try:
+                # Converti le date in formato stringa per il database
+                edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
+                edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
+                
+                # Verifica se ci sono più righe nell'edited_df rispetto all'originale
+                if len(edited_df) > len(df_phases_wo):
+                    # Ottieni le nuove righe
+                    new_rows = edited_df.iloc[len(df_phases_wo):]
+                    
+                    for _, row in new_rows.iterrows():
+                        rc = modules.sqlite_db.insert_wo_phase(row, conn)
+                    
+                    st.success("New phase added successfully!")
+                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_phases_data(conn)
+                
+                elif not edited_df.equals(df_phases_wo):
+                    for index, row in edited_df.iterrows():
+                        rc = modules.sqlite_db.update_wo_phase(row, conn)                   
+                    conn.commit()
+                    st.success("Update successfully!")                    
+                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_phases_data(conn)
+
+                else:
+                    st.info("Nothing to save!")
+                    
+            except Exception as e:
+                st.error(f"Error saving data in TORP_WO_PHASES: {str(e)}")
+                st.write("Row data:", row.to_dict())
+                
+    return edited_df
+
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
@@ -334,44 +431,6 @@ def reset_application_state():
 
 def manage_workorder(conn):
 
-    def show_grid(df):
-        grid_builder = GridOptionsBuilder.from_dataframe(df)
-        
-        # Configurazione base delle colonne
-        grid_builder.configure_default_column(
-            resizable=True,
-            filterable=True,
-            sortable=True,
-            editable=False,
-            enableRowGroup=False
-        )
-        
-        # Configurazione selezione riga
-        grid_builder.configure_selection(
-            selection_mode='single',
-            use_checkbox=True,
-            header_checkbox=True
-        )
-        
-        # Altre configurazioni
-        grid_builder.configure_pagination(paginationAutoPageSize=False, paginationPageSize=12)
-        grid_builder.configure_grid_options(domLayout='normal')
-        grid_builder.configure_column("WOID", cellStyle=cellStyle)
-        
-        grid_options = grid_builder.build()
-        
-        return AgGrid(
-            df,
-            gridOptions=grid_options,
-            allow_unsafe_jscode=True,
-            theme="balham",
-            fit_columns_on_grid_load=False,
-            update_mode=GridUpdateMode.SELECTION_CHANGED,  # Importante: reagisce ai cambi di selezione
-            data_return_mode=DataReturnMode.AS_INPUT,
-            key="main_grid"
-        )
-
-
     modules.sqlite_db.initialize_session_state(conn)
     if "grid_data" not in st.session_state:
         st.session_state.grid_data = st.session_state.df_workorders.copy()
@@ -397,18 +456,6 @@ def manage_workorder(conn):
         how='left'
     )
 
-    cellStyle = JsCode("""
-        function(params) {
-            if (params.column.colId === 'WOID') {
-                       return {
-                        'backgroundColor': '#8ebfde',
-                        'color': '#000000',
-                        'fontWeight': 'bold'
-                    };
-            }
-            return null;
-        }
-        """)
     
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
@@ -443,63 +490,44 @@ def manage_workorder(conn):
         filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter] 
     st.session_state.grid_data = filtered_data
 
-    # Display grid and handle selection
+    # Navbar
+    navbar_h_options = ["Home", "Refresh", "Modify Work Order", "WO Phases"]
     
-    st.subheader(":orange[Work Order list]")
-    st.session_state.grid_response = show_grid(st.session_state.grid_data)
-    
-    navbar_h_options = ["Home", "Refresh", "WO Header", "WO Phases"]
     navbar_h = option_menu(None, options=navbar_h_options, 
-    icons=['house','play','book','activity'], 
-    menu_icon="cast", default_index=0, orientation="horizontal"
+        icons=['house','arrow-counterclockwise','book','clipboard-pulse'], 
+        menu_icon="cast", default_index=0, orientation="horizontal",
+        styles={
+        "container": {"padding": "0!important", "background-color": "#fafafa"},
+        "icon": {"color": "orange", "font-size": "15px"}, 
+        "nav-link": {"font-size": "15px", "text-align": "left", "margin":"0px"},
+        "nav-link-selected": {"background-color": "grey"},
+        }
     )
-    #st.write(f"You have selecte option {navbar_h}")
-    
+
+    # Create grid
+    st.subheader(":orange[Work Order list]")
+    st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
+   
+   
     if navbar_h == "Refresh":
         reset_application_state()
         st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
-    elif navbar_h == "WO Header" or navbar_h == "WO Phases":
+    elif navbar_h == "Modify Work Order" or navbar_h == "WO Phases":
         selected_rows_df = st.session_state.grid_response['selected_rows']
         
         if selected_rows_df is None or len(selected_rows_df) == 0:
-            st.warning("Per favore seleziona una riga dalla griglia")
+            st.warning("Please select a grid row first!", icon="⚠️")
             return
         
-        if navbar_h == "WO Header":
+        if navbar_h == "Modify Work Order":
             st.subheader(":orange[Work Order detail]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_workorder_dialog(selected_row_dict, conn)
         elif navbar_h == "WO Phases":
-            st.subheader(":orange[Work Order phase]")
+            st.subheader(":orange[WO Phases]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_phases_dialog(selected_row_dict, conn)
     
-    # # workorder_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
-    # # workitem_button_disable = not (selected_rows is not None and isinstance(selected_rows, pd.DataFrame) and not selected_rows.empty)
-    # workorder_button_disable = False
-    # workitem_button_disable = False
-
-    # # ... (Pulsanti e chiamate di dialogo)
-    # #col1, col2, col3 = st.columns(3)
-    # #with col1:
-    
-    # if st.button("🔄 Refresh data", type="secondary"):
-    #     reset_application_state()
-    #     st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
-    
-    # #with col2:
-    # if st.button("✏️ Modify Work Order", type="secondary", disabled=workorder_button_disable):
-    #     if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-    #         selected_rows_df = st.session_state.grid_response['selected_rows']
-    #         selected_row_dict = selected_rows_df.iloc[0].to_dict() #oppure selected_rows_df.to_dict('records')[0]
-    #         show_workorder_dialog(selected_row_dict, conn)
-
-    # #with col3:
-    # if st.button("🎯 Create Work Item", type="secondary", disabled=workitem_button_disable):
-    #     if st.session_state.grid_response and st.session_state.grid_response['selected_rows'] is not None and not st.session_state.grid_response['selected_rows'].empty:
-    #         selected_rows_df = st.session_state.grid_response['selected_rows']
-    #         selected_row_dict = selected_rows_df.iloc[0].to_dict()  # oppure selected_rows_df.to_dict('records')[0]
-
 
 def main():
     pass

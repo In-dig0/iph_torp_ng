@@ -1,4 +1,6 @@
+# 3th party packages
 import streamlit as st
+# App modules
 import modules.sqlite_db
 
 # Global constants
@@ -10,8 +12,8 @@ def dispaly_home_page():
     st.header(f":blue[{APPNAME} Web Application]", divider="grey")
     st.markdown(
         """
-        <h3>A simple web application developed as a POC in order to manage <br>
-        IPH Technical Office requests.</h3>
+        <h3>A simple web application developed to manage <br>
+        IPH Technical Office Requests.</h3>
         """,
         unsafe_allow_html=True
         )

@@ -1,9 +1,11 @@
+# 3th party packages
 import streamlit as st
 import pandas as pd
-import time
-from typing import Optional, Tuple, Dict, List
 from streamlit_calendar import calendar
 import calendar as std_cal
+# Built-in packages
+import time
+from typing import Optional, Tuple, Dict, List
 from datetime import datetime, timedelta, date
 # Internal app module
 import modules.sqlite_db
@@ -543,12 +545,6 @@ def create_workitem(conn)-> None:
                 success = modules.sqlite_db.save_workitem(witem, conn)
                 if success:
                     st.success("New workitem created!")
-                    # # Set a flag in session state to indicate that a reload is needed
-                    # st.session_state.reload_needed = True
-                    # # Set default values for the form fields
-                    # st.session_state.form_reset = True
-                    # time.sleep(1)
-                    # st.rerun()
 
                     # Imposta il flag per aggiornare il calendario
                     st.session_state.calendar_needs_update = True
