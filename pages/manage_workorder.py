@@ -43,7 +43,7 @@ def show_wo_phases_dialog(selected_row_dict, conn):
     tskgrl2_options = st.session_state.df_tskgrl2["NAME"].tolist()
     tskgrl2_options = sorted(tskgrl2_options)
     #selected_tskgrl1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, selected_tskgrl1, "CODE")
-
+    selected_tdtlid = modules.servant.get_code_from_name(st.session_state.df_users, selected_row_dict["TDTL_NAME"], "CODE")
     # Task Group Level 2 dropdown (dependent on Level 1)
     # tskgrl2_options = st.session_state.df_tskgrl2[st.session_state.df_tskgrl2['PCODE'] == selected_tskgrl1_code]['NAME'].unique()
     # selected_tskgrl2 = st.selectbox(label=":blue[TaskGroup L2]", options=tskgrl2_options, index=None, key="sb_tskgrl2")
@@ -62,9 +62,9 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     help="Work Order ID",
                     default=selected_row_dict["WOID"]
                 ),
-                "TDTL_NAME": st.column_config.TextColumn(
-                    "TDTL_NAME",
-                    help="Team Leader name",
+                "TDTLID": st.column_config.TextColumn(
+                    "TDTLID",
+                    help="Team Leader ID",
                     default=selected_row_dict["TDTL_NAME"]
                 ),
                 "ACTGRP_L1": st.column_config.SelectboxColumn(
