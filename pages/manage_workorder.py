@@ -62,10 +62,10 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     help="Work Order ID",
                     default=selected_row_dict["WOID"]
                 ),
-                "TDTLID": st.column_config.TextColumn(
-                    "TDTLID",
-                    help="Task Detail ID",
-                    default=selected_row_dict["TDTLID"]
+                "TDTL_NAME": st.column_config.TextColumn(
+                    "TDTL_NAME",
+                    help="Team Leader name",
+                    default=selected_row_dict["TDTL_NAME"]
                 ),
                 "ACTGRP_L1": st.column_config.SelectboxColumn(
                     label="ACTIVITY_GRP_L1",
