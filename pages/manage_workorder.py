@@ -124,7 +124,7 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     new_rows = edited_df.iloc[len(df_wo_activity):]
                     
                     for _, row in new_rows.iterrows():
-                        st.info(row)
+                        st.info(f"{row["ACTGRP_L1"]}-{row["ACTGRP_L2"]}")
                         rc = modules.sqlite_db.insert_wo_activity(row, conn)
                     
                     st.success("New phase added successfully!")
