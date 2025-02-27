@@ -336,6 +336,31 @@ def load_wo_phases_data(conn):
     return df_wo_phases
 
 
+def load_wo_activity_data(conn):
+    """ Load TORP_WO_ACTIVITY records into df """    
+    
+    try:
+        df_wo_activity = pd.read_sql_query("""
+            SELECT 
+                A.woid AS WOID, 
+                A.tdtlid AS TDTLID,
+                A.actgrp_l1 AS ACTGRP_L1,
+                A.actgrp_l2 AS ACTGRP_L2,                
+                A.status AS STATUS,
+                A.startdate AS STARTDATE,
+                A.enddate AS ENDDATE,
+                A.progress AS PROGRESS.
+                A.description AS DESCRIPTION
+            FROM TORP_WO_ACTIVITY AS A
+            ORDER by woid
+            """, conn)
+    except Exception as errMsg:
+        st.error(f"**ERROR load data from TORP_WO_ACTIVITY: \n{errMsg}", icon="🚨")
+        return None
+    
+    return df_wo_activity
+
+
 def load_requests_data(conn):
     """ Load TORP_REQUESTS records into df """    
 
@@ -1173,6 +1198,69 @@ def update_wo_phase(row, conn):
         if cursor:
             cursor.close() # Close the cursor in a finally block
 
+#####################
+def insert_wo_activity(row, conn):
+    try:
+        cursor = conn.cursor()
+        insert_query = """
+        INSERT INTO TORP_WO_ACTIVITY (WOID, TDTLID, ACTGRP_L1, ACTGRP_L2, STATUS, STARTDATE, ENDDATE, PROGRESS, DESCRIPTION)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        conn.execute(insert_query, (
+            row['WOID'],
+            row['TDTLID'],
+            row['ACTGRP_L1'],
+            row['ACTGRP_L2'],
+            row['STATUS'],
+            row['STARTDATE'],
+            row['ENDDATE'],
+            row['PROGRESS'],
+            row['DESCRIPTION']
+        ))
+    
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        st.error(f"**ERROR inserting data in table TORP_WO_PHASES: \n{e}", icon="🚨")
+        return False
+
+    finally:
+        if cursor:
+            cursor.close() # Close the cursor in a finally block
+
+def update_wo_activity(row, conn):
+    try:
+        cursor = conn.cursor()
+        update_query = """
+        UPDATE TORP_WO_ACTIVITY 
+        SET STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?
+        WHERE WOID = ? AND TDTLID = ? AND ACTGRP_L1 = ? AND ACTGRP_L2 = ?
+        """
+        conn.execute(update_query, (
+            row['STATUS'],
+            row['STARTDATE'],
+            row['ENDDATE'],
+            row['PROGRESS'],
+            row['DESCRIPTION'],
+            row['WOID'],
+            row['TDTLID'],
+            row['ACTGRP_L1'],
+            row['ACTGRP_L2']            
+        ))
+    
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        st.error(f"**ERROR updating data in table TORP_WO_ACTIVITY: \n{e}", icon="🚨")
+        return False
+
+    finally:
+        if cursor:
+            cursor.close() # Close the cursor in a finally block
+#####################
+
 
 def initialize_session_state(conn): #passo la connessione
         # Load data only once and store in session state
@@ -1188,6 +1276,7 @@ def initialize_session_state(conn): #passo la connessione
         'df_lk_pline_tdtl': load_lk_pline_tdtl_data,
         'df_permission': load_permission_data,
         'df_wo_phases': load_wo_phases_data,
+        'df_wo_activity': load_wo_activity_data,  
         'df_detail': load_detail_data,
         'df_requests': load_requests_data,
         'df_reqassignedto': load_reqassignedto_data,

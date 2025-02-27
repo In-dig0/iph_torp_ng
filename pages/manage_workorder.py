@@ -25,14 +25,30 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 def show_wo_phases_dialog(selected_row_dict, conn):
     # Ottieni il DataFrame filtrato
     df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
-    
+    df_activity_wo = st.session_state.df_activity_wo[st.session_state.df_activity_wo["WOID"]==selected_row_dict["WOID"]]
     # Resetta l'indice e rimuovi la colonna dell'indice se presente
     df_phases_wo = df_phases_wo.reset_index(drop=True)
-    
+    df_activity_wo = df_activity_wo.reset_index(drop=True)
+
     # Converti le colonne delle date da stringa a datetime
     df_phases_wo['STARTDATE'] = pd.to_datetime(df_phases_wo['STARTDATE'])
     df_phases_wo['ENDDATE'] = pd.to_datetime(df_phases_wo['ENDDATE'])
-    
+
+    df_activity_wo['STARTDATE'] = pd.to_datetime(df_activity_wo['STARTDATE'])
+    df_activity_wo['ENDDATE'] = pd.to_datetime(df_activity_wo['ENDDATE'])
+
+    # Task Group Level 1 dropdown
+    tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
+    tskgrl1_options = sorted(tskgrl1_options)
+    tskgrl2_options = st.session_state.df_tskgrl2["NAME"].tolist()
+    tskgrl2_options = sorted(tskgrl2_options)
+    #selected_tskgrl1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, selected_tskgrl1, "CODE")
+
+    # Task Group Level 2 dropdown (dependent on Level 1)
+    # tskgrl2_options = st.session_state.df_tskgrl2[st.session_state.df_tskgrl2['PCODE'] == selected_tskgrl1_code]['NAME'].unique()
+    # selected_tskgrl2 = st.selectbox(label=":blue[TaskGroup L2]", options=tskgrl2_options, index=None, key="sb_tskgrl2")
+    # selected_tskgrl2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, selected_tskgrl2, "CODE")
+
     with st.container(border=True):
         # Editor dei dati con configurazione aggiuntiva
         edited_df = st.data_editor(
@@ -50,17 +66,16 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     "TDTLID",
                     help="Task Detail ID"
                 ),
-                "PHASE_CODE": st.column_config.SelectboxColumn(
-                    label="PHASE_CODE",
-                    help="Phase Code",
-                    options=[
-                        "01_STUDIO",
-                        "02_PROGETTO",
-                        "03_PROTOTIPO",
-                        "04_VALIDAZIONE",
-                        "05_SERIE"
-                    ]
+                "ACTGRP_L1": st.column_config.SelectboxColumn(
+                    label="ACTIVITY_GRP_L1",
+                    help="Activity Group L1",
+                    options=tskgrl1_options
                 ),
+                "ACTGRP_L2": st.column_config.SelectboxColumn(
+                    label="ACTIVITY_GRP_L2",
+                    help="Activity Group L2",
+                    options=tskgrl2_options
+                ),                
                 "STATUS": st.column_config.SelectboxColumn(
                     "STATUS",
                     help="Phase Status",
@@ -103,28 +118,28 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                 edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
                 
                 # Verifica se ci sono più righe nell'edited_df rispetto all'originale
-                if len(edited_df) > len(df_phases_wo):
+                if len(edited_df) > len(df_activity_wo):
                     # Ottieni le nuove righe
-                    new_rows = edited_df.iloc[len(df_phases_wo):]
+                    new_rows = edited_df.iloc[len(df_activity_wo):]
                     
                     for _, row in new_rows.iterrows():
-                        rc = modules.sqlite_db.insert_wo_phase(row, conn)
+                        rc = modules.sqlite_db.insert_wo_activity(row, conn)
                     
                     st.success("New phase added successfully!")
-                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_phases_data(conn)
+                    st.session_state.df_activity_wo = modules.sqlite_db.load_wo_activity_data(conn)
                 
                 elif not edited_df.equals(df_phases_wo):
                     for index, row in edited_df.iterrows():
-                        rc = modules.sqlite_db.update_wo_phase(row, conn)                   
+                        rc = modules.sqlite_db.update_wo_update_wo_activity(row, conn)                   
                     conn.commit()
                     st.success("Update successfully!")                    
-                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_phases_data(conn)
+                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_activity_data(conn)
 
                 else:
                     st.info("Nothing to save!")
                     
             except Exception as e:
-                st.error(f"Error saving data in TORP_WO_PHASES: {str(e)}")
+                st.error(f"Error saving data in TORP_WO_ACTIVITY: {str(e)}")
                 st.write("Row data:", row.to_dict())
                 
     return edited_df
