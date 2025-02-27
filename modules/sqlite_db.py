@@ -1222,7 +1222,7 @@ def insert_wo_activity(row, conn):
         return True
     except Exception as e:
         conn.rollback()
-        st.error(f"**ERROR inserting data in table TORP_WO_PHASES: \n{e}", icon="🚨")
+        st.error(f"**ERROR inserting data in table TORP_WORKACTIVITY: \n{e}", icon="🚨")
         return False
 
     finally:
