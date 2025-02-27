@@ -129,12 +129,12 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     st.success("New phase added successfully!")
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
-                elif not edited_df.equals(df_phases_wo):
+                elif not edited_df.equals(df_wo_activity):
                     for index, row in edited_df.iterrows():
                         rc = modules.sqlite_db.update_wo_update_wo_activity(row, conn)                   
                     conn.commit()
                     st.success("Update successfully!")                    
-                    st.session_state.df_wo_phases = modules.sqlite_db.load_wo_activity_data(conn)
+                    st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
 
                 else:
                     st.info("Nothing to save!")
