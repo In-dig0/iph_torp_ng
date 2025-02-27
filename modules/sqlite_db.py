@@ -351,7 +351,7 @@ def load_wo_activity_data(conn):
                 A.enddate AS ENDDATE,
                 A.progress AS PROGRESS,
                 A.description AS DESCRIPTION
-            FROM TORP_WOACTIVITY AS A
+            FROM TORP_WORKACTIVITY AS A
             ORDER by woid
             """, conn)
     except Exception as errMsg:
@@ -1203,7 +1203,7 @@ def insert_wo_activity(row, conn):
     try:
         cursor = conn.cursor()
         insert_query = """
-        INSERT INTO TORP_WOACTIVITY (WOID, TDTLID, ACTGRP_L1, ACTGRP_L2, STATUS, STARTDATE, ENDDATE, PROGRESS, DESCRIPTION)
+        INSERT INTO TORP_WORKACTIVITY (WOID, TDTLID, ACTGRP_L1, ACTGRP_L2, STATUS, STARTDATE, ENDDATE, PROGRESS, DESCRIPTION)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         conn.execute(insert_query, (
@@ -1233,7 +1233,7 @@ def update_wo_activity(row, conn):
     try:
         cursor = conn.cursor()
         update_query = """
-        UPDATE TORP_WOACTIVITY 
+        UPDATE TORP_WORKACTIVITY 
         SET STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
         WHERE WOID = ? AND TDTLID = ? AND ACTGRP_L1 = ? AND ACTGRP_L2 = ?
         """
