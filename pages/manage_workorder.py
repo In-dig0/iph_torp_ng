@@ -25,17 +25,17 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 def show_wo_phases_dialog(selected_row_dict, conn):
     # Ottieni il DataFrame filtrato
     df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
-    df_activity_wo = st.session_state.df_activity_wo[st.session_state.df_activity_wo["WOID"]==selected_row_dict["WOID"]]
+    df_wo_activity = st.session_state.df_wo_activity[st.session_state.df_wo_activity["WOID"]==selected_row_dict["WOID"]]
     # Resetta l'indice e rimuovi la colonna dell'indice se presente
     df_phases_wo = df_phases_wo.reset_index(drop=True)
-    df_activity_wo = df_activity_wo.reset_index(drop=True)
+    df_wo_activity = df_wo_activity.reset_index(drop=True)
 
     # Converti le colonne delle date da stringa a datetime
     df_phases_wo['STARTDATE'] = pd.to_datetime(df_phases_wo['STARTDATE'])
     df_phases_wo['ENDDATE'] = pd.to_datetime(df_phases_wo['ENDDATE'])
 
-    df_activity_wo['STARTDATE'] = pd.to_datetime(df_activity_wo['STARTDATE'])
-    df_activity_wo['ENDDATE'] = pd.to_datetime(df_activity_wo['ENDDATE'])
+    df_wo_activity['STARTDATE'] = pd.to_datetime(df_wo_activity['STARTDATE'])
+    df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
 
     # Task Group Level 1 dropdown
     tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
@@ -118,15 +118,15 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                 edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
                 
                 # Verifica se ci sono più righe nell'edited_df rispetto all'originale
-                if len(edited_df) > len(df_activity_wo):
+                if len(edited_df) > len(df_wo_activity):
                     # Ottieni le nuove righe
-                    new_rows = edited_df.iloc[len(df_activity_wo):]
+                    new_rows = edited_df.iloc[len(df_wo_activity):]
                     
                     for _, row in new_rows.iterrows():
                         rc = modules.sqlite_db.insert_wo_activity(row, conn)
                     
                     st.success("New phase added successfully!")
-                    st.session_state.df_activity_wo = modules.sqlite_db.load_wo_activity_data(conn)
+                    st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
                 elif not edited_df.equals(df_phases_wo):
                     for index, row in edited_df.iterrows():
