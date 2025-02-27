@@ -349,7 +349,7 @@ def load_wo_activity_data(conn):
                 A.status AS STATUS,
                 A.startdate AS STARTDATE,
                 A.enddate AS ENDDATE,
-                A.progress AS PROGRESS.
+                A.progress AS PROGRESS,
                 A.description AS DESCRIPTION
             FROM TORP_WO_ACTIVITY AS A
             ORDER by woid
