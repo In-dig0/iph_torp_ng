@@ -65,7 +65,7 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                 "TDTLID": st.column_config.TextColumn(
                     "TDTLID",
                     help="Team Leader ID",
-                    default=selected_row_dict["TDTL_NAME"]
+                    default=selected_tdtlid
                 ),
                 "ACTGRP_L1": st.column_config.SelectboxColumn(
                     label="ACTIVITY_GRP_L1",
