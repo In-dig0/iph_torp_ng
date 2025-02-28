@@ -79,7 +79,7 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                 ),                
                 "STATUS": st.column_config.SelectboxColumn(
                     "STATUS",
-                    help="Phase Status",
+                    help="Status",
                     options=[
                         "TO_START",
                         "IN_PROGRESS",
@@ -124,10 +124,24 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                     new_rows = edited_df.iloc[len(df_wo_activity):]
                     
                     for _, row in new_rows.iterrows():
-                        st.info(f"{row["ACTGRP_L1"]}-{row["ACTGRP_L2"]}")
-                        rc = modules.sqlite_db.insert_wo_activity(row, conn)
+                        #st.info(f"{row["ACTGRP_L1"]}-{row["ACTGRP_L2"]}")
+                        actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                        actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                        wa = {
+                            "WOID": row["WOID"], 
+                            "TDTLID": row["TDTLID"], 
+                            "ACTGRP_L1": actgrp_l1_code, 
+                            "ACTGRP_L2": actgrp_l2_code, 
+                            "STATUS": row["STATUS"],
+                            "STARTDATE": row["STARTDATE"],
+                            "ENDDATE": row["ENDDATE"],
+                            "PROGRESS": row["PROGRESS"],
+                            "DESCRIPTION": row["DESCRIPTION"]
+                            }
+                        st.info(wa)    
+                        rc = modules.sqlite_db.insert_wo_activity(wa, conn)
                     
-                    st.success("New phase added successfully!")
+                    st.success("New work activity added successfully!")
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
                 elif not edited_df.equals(df_wo_activity):
