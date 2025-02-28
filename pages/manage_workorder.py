@@ -138,8 +138,10 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                             "PROGRESS": row["PROGRESS"],
                             "DESCRIPTION": row["DESCRIPTION"]
                             }
-                        st.info(wa)    
+                        st.info(wa) 
+                        time.sleep(5)   
                         rc = modules.sqlite_db.insert_wo_activity(wa, conn)
+                        time.sleep(5)   
                     
                     st.success("New work activity added successfully!")
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
