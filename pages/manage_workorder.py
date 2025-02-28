@@ -508,7 +508,7 @@ def manage_workorder(conn):
     st.session_state.grid_data = filtered_data
 
     # Navbar
-    navbar_h_options = ["Home", "Refresh", "Modify Work Order", "WO Phases"]
+    navbar_h_options = ["Home", "Refresh", "Modify Work Order", "WO Activity"]
     
     navbar_h = option_menu(None, options=navbar_h_options, 
         icons=['house','arrow-counterclockwise','book','clipboard-pulse'], 
@@ -529,7 +529,7 @@ def manage_workorder(conn):
     if navbar_h == "Refresh":
         reset_application_state()
         st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
-    elif navbar_h == "Modify Work Order" or navbar_h == "WO Phases":
+    elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
         selected_rows_df = st.session_state.grid_response['selected_rows']
         
         if selected_rows_df is None or len(selected_rows_df) == 0:
@@ -540,8 +540,8 @@ def manage_workorder(conn):
             st.subheader(":orange[Work Order detail]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_workorder_dialog(selected_row_dict, conn)
-        elif navbar_h == "WO Phases":
-            st.subheader(":orange[WO Phases]")
+        elif navbar_h == "WO Activity":
+            st.subheader(":orange[WO Activity]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_phases_dialog(selected_row_dict, conn)
     
