@@ -138,7 +138,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                     new_rows = edited_df.iloc[len(df_wo_activity):]
                     
                     for _, row in new_rows.iterrows():
-                        #st.info(f"{row["ACTGRP_L1"]}-{row["ACTGRP_L2"]}")
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
                         wa = {
@@ -152,7 +151,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             "PROGRESS": row["PROGRESS"],
                             "DESCRIPTION": row["DESCRIPTION"]
                             }
-                        st.info(wa) 
+                        #st.info(wa) 
                         time.sleep(5)   
                         rc = modules.sqlite_db.insert_wo_activity(wa, conn)
                         time.sleep(5)   
@@ -162,6 +161,19 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 
                 elif not edited_df.equals(df_wo_activity):
                     for index, row in edited_df.iterrows():
+                        actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                        actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                        wa = {
+                            "WOID": row["WOID"], 
+                            "TDTLID": row["TDTLID"], 
+                            "ACTGRP_L1": actgrp_l1_code, 
+                            "ACTGRP_L2": actgrp_l2_code, 
+                            "STATUS": row["STATUS"],
+                            "STARTDATE": row["STARTDATE"],
+                            "ENDDATE": row["ENDDATE"],
+                            "PROGRESS": row["PROGRESS"],
+                            "DESCRIPTION": row["DESCRIPTION"]
+                            }                        
                         rc = modules.sqlite_db.update_wo_activity(row, conn)                   
                     conn.commit()
                     st.success("Update successfully!")                    
