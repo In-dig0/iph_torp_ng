@@ -122,9 +122,20 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 # Flag per tracciare se ci sono modifiche
                 has_changes = False
 
-                # Converti le date in formato stringa per il database
-                edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
-                edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
+                # Normalizza le date nel dataframe modificato
+                edited_df['STARTDATE'] = pd.to_datetime(edited_df['STARTDATE'], errors='coerce').dt.strftime('%Y-%m-%d')
+                edited_df['ENDDATE'] = pd.to_datetime(edited_df['ENDDATE'], errors='coerce').dt.strftime('%Y-%m-%d')
+
+                # Normalizza le date nel dataframe originale
+                original_df['STARTDATE'] = pd.to_datetime(original_df['STARTDATE'], errors='coerce').dt.strftime('%Y-%m-%d')
+                original_df['ENDDATE'] = pd.to_datetime(original_df['ENDDATE'], errors='coerce').dt.strftime('%Y-%m-%d')
+
+                # Debug: Stampa le date normalizzate
+                print("Edited DF Dates:")
+                print(edited_df[['STARTDATE', 'ENDDATE']].head())
+
+                print("Original DF Dates:")
+                print(original_df[['STARTDATE', 'ENDDATE']].head())
 
                 # Individua le righe eliminate confrontando gli ROWID
                 original_rowids = set(original_df['ROWID'].dropna())
