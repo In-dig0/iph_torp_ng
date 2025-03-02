@@ -1239,9 +1239,9 @@ def update_wo_activity(row, conn):
         # WHERE WOID = ? AND TDTLID = ? AND ACTGRP_L1 = ? AND ACTGRP_L2 = ?
         # """
         update_query = """
-        # UPDATE TORP_WORKACTIVITY 
-        # SET ACTGRP_L1 = ?, ACTGRP_L2 = ? , STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
-        # WHERE ROWID = ?       
+        UPDATE TORP_WORKACTIVITY 
+        SET ACTGRP_L1 = ?, ACTGRP_L2 = ? , STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
+        WHERE ROWID = ?       
         """
         conn.execute(update_query, (
             row['ACTGRP_L1'],
