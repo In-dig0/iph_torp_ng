@@ -185,7 +185,45 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                     if new_rows_added:
                         st.success("New work activities added successfully!")
                         time.sleep(2)
-                
+
+###################################################
+
+                # # Gestisci gli aggiornamenti
+                # for idx, row in edited_df.iterrows():
+                #     if not pd.isna(row["ROWID"]) and row["ROWID"] in original_rowids:
+                #         # Trova la riga corrispondente nel dataframe originale
+                #         original_row = original_df[original_df["ROWID"] == row["ROWID"]].iloc[0] if not original_df[original_df["ROWID"] == row["ROWID"]].empty else None
+                        
+                #         if original_row is not None:
+                #             # Verifica se la riga è stata modificata
+                #             if (row["ACTGRP_L1"] != original_row["ACTGRP_L1"] or
+                #                 row["ACTGRP_L2"] != original_row["ACTGRP_L2"] or
+                #                 row["STATUS"] != original_row["STATUS"] or
+                #                 row["STARTDATE"] != original_row["STARTDATE"] or
+                #                 row["ENDDATE"] != original_row["ENDDATE"] or
+                #                 row["PROGRESS"] != original_row["PROGRESS"]):
+                                
+                #                 actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                #                 actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                #                 wa = {
+                #                     "ROWID": row["ROWID"],
+                #                     "WOID": row["WOID"], 
+                #                     "TDTLID": row["TDTLID"], 
+                #                     "ACTGRP_L1": actgrp_l1_code, 
+                #                     "ACTGRP_L2": actgrp_l2_code, 
+                #                     "STATUS": row["STATUS"],
+                #                     "STARTDATE": row["STARTDATE"],
+                #                     "ENDDATE": row["ENDDATE"],
+                #                     "PROGRESS": row["PROGRESS"],
+                #                     "DESCRIPTION": row.get("DESCRIPTION", "")
+                #                 }
+                #                 rc = modules.sqlite_db.update_wo_activity(wa, conn)
+                #                 if rc:
+                #                     st.success(f"Work activity {wa['ROWID']} updated successfully!")
+                #                     time.sleep(2)
+                #                 else:
+                #                     st.error(f"Failed to update work activity {wa['ROWID']}")
+                #                     time.sleep(7)
                 # Gestisci gli aggiornamenti
                 for idx, row in edited_df.iterrows():
                     if not pd.isna(row["ROWID"]) and row["ROWID"] in original_rowids:
@@ -193,14 +231,8 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                         original_row = original_df[original_df["ROWID"] == row["ROWID"]].iloc[0] if not original_df[original_df["ROWID"] == row["ROWID"]].empty else None
                         
                         if original_row is not None:
-                            # Verifica se la riga è stata modificata
-                            if (row["ACTGRP_L1"] != original_row["ACTGRP_L1"] or
-                                row["ACTGRP_L2"] != original_row["ACTGRP_L2"] or
-                                row["STATUS"] != original_row["STATUS"] or
-                                row["STARTDATE"] != original_row["STARTDATE"] or
-                                row["ENDDATE"] != original_row["ENDDATE"] or
-                                row["PROGRESS"] != original_row["PROGRESS"]):
-                                
+                            # Verifica se la riga è stata modificata confrontando tutti i campi rilevanti
+                            if not row.equals(original_row):
                                 actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                                 actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
                                 wa = {
@@ -222,6 +254,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                 else:
                                     st.error(f"Failed to update work activity {wa['ROWID']}")
                                     time.sleep(7)
+############################################
 
                 # Aggiorna il dataframe in session_state
                 st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
