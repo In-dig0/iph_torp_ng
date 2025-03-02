@@ -32,7 +32,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
     df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
     
     # Converti i codici in nomi per la visualizzazione
-    # Assicurati che ci siano le colonne corrette nel dataframe
     df_wo_activity_display = df_wo_activity.copy()
 
     # Aggiungi qui la conversione da codice a nome per ACTGRP_L1
@@ -95,15 +94,11 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 "STARTDATE": st.column_config.DateColumn(
                     "STARTDATE",
                     help="Start Date",
-                    # min_value=datetime(2025, 1, 1),
-                    # max_value=datetime(2025, 12, 31),
                     format="YYYY-MM-DD"
                 ),
                 "ENDDATE": st.column_config.DateColumn(
                     "ENDDATE",
                     help="End Date",
-                    # min_value=datetime(2025, 1, 1),
-                    # max_value=datetime(2025, 12, 31),
                     format="YYYY-MM-DD"
                 ),
                 "PROGRESS": st.column_config.NumberColumn(
@@ -114,7 +109,8 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                     step=5,
                     default=0
                 )
-            }
+            },
+            key=f"data_editor_{selected_row_dict['WOID']}_{st.session_state.get('refresh_counter', 0)}"
         )
         
         if st.button("Save"):
@@ -122,7 +118,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 # Converti le date in formato stringa per il database
                 edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
                 edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
-
 
                 # Converti qui i nomi in codici prima di salvare
                 edited_df_save = edited_df.copy()
@@ -136,7 +131,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 if len(edited_df) > len(df_wo_activity):
                     # Ottieni le nuove righe
                     new_rows = edited_df.iloc[len(df_wo_activity):]
-                    st.info(new_rows)
                     for _, row in new_rows.iterrows():
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
@@ -153,13 +147,9 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             "DESCRIPTION": row["DESCRIPTION"]
                             }
                         rc = modules.sqlite_db.insert_wo_activity(wa, conn)
-                        if rc == True:
-                            st.success(f"New work activity {wa} added successfully!")
-                        time.sleep(5)   
                     
-                    #st.success("New work activity added successfully!")
-                    st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
-                
+                    st.success("New work activity added successfully!")
+                    
                 elif not edited_df.equals(df_wo_activity):
                     for index, row in edited_df.iterrows():
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
@@ -176,20 +166,29 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             "PROGRESS": row["PROGRESS"],
                             "DESCRIPTION": row["DESCRIPTION"]
                             }                        
-                        st.info(wa)
                         rc = modules.sqlite_db.update_wo_activity(wa, conn)                   
                     st.success("Update successfully!")                    
-                    st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
-
+                
                 else:
                     st.info("Nothing to save!")
+                    return edited_df
+                
+                # Aggiorna il dataframe in session_state
+                st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
+                
+                # Incrementa il contatore di refresh per forzare il ricaricamento del widget
+                if 'refresh_counter' not in st.session_state:
+                    st.session_state.refresh_counter = 0
+                st.session_state.refresh_counter += 1
+                
+                # Ricarica la pagina per mostrare i dati aggiornati
+                st.rerun()
                     
             except Exception as e:
                 st.error(f"Error saving data in TORP_WO_ACTIVITY: {str(e)}")
-                st.write("Row data:", row.to_dict())
+                st.write("Row data:", edited_df.to_dict())
                 
     return edited_df
-
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
