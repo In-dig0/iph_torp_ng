@@ -24,15 +24,9 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 
 def show_wo_activity_dialog(selected_row_dict, conn):
     # Ottieni il DataFrame filtrato
-    #df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
     df_wo_activity = st.session_state.df_wo_activity[st.session_state.df_wo_activity["WOID"]==selected_row_dict["WOID"]]
     # Resetta l'indice e rimuovi la colonna dell'indice se presente
-    #df_phases_wo = df_phases_wo.reset_index(drop=True)
     df_wo_activity = df_wo_activity.reset_index(drop=True)
-
-    # Converti le colonne delle date da stringa a datetime
-    # df_phases_wo['STARTDATE'] = pd.to_datetime(df_phases_wo['STARTDATE'])
-    # df_phases_wo['ENDDATE'] = pd.to_datetime(df_phases_wo['ENDDATE'])
 
     df_wo_activity['STARTDATE'] = pd.to_datetime(df_wo_activity['STARTDATE'])
     df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
@@ -51,22 +45,19 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         lambda code: modules.servant.get_description_from_code(st.session_state.df_tskgrl2, code, "NAME")
     )
 
+    st.write(df_wo_activity_display)
+
     # Task Group Level 1 dropdown
     tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
     tskgrl1_options = sorted(tskgrl1_options)
     tskgrl2_options = st.session_state.df_tskgrl2["NAME"].tolist()
     tskgrl2_options = sorted(tskgrl2_options)
-    #selected_tskgrl1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, selected_tskgrl1, "CODE")
     selected_tdtlid = modules.servant.get_code_from_name(st.session_state.df_users, selected_row_dict["TDTL_NAME"], "CODE")
-    # Task Group Level 2 dropdown (dependent on Level 1)
-    # tskgrl2_options = st.session_state.df_tskgrl2[st.session_state.df_tskgrl2['PCODE'] == selected_tskgrl1_code]['NAME'].unique()
-    # selected_tskgrl2 = st.selectbox(label=":blue[TaskGroup L2]", options=tskgrl2_options, index=None, key="sb_tskgrl2")
-    # selected_tskgrl2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, selected_tskgrl2, "CODE")
 
     with st.container(border=True):
         # Editor dei dati con configurazione aggiuntiva
         edited_df = st.data_editor(
-            df_wo_activity,
+            df_wo_activity_display,
             use_container_width=True,
             hide_index=True,
             num_rows="dynamic",
