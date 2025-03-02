@@ -118,6 +118,13 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         )
 ##########################################        
         if st.button("Save"):
+            # Normalizza i dati
+            edited_df = edited_df.fillna('')  # Sostituisci NaN con stringhe vuote
+            original_df = original_df.fillna('')  # Sostituisci NaN con stringhe vuote
+            edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
+            edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
+            original_df['STARTDATE'] = original_df['STARTDATE'].dt.strftime('%Y-%m-%d')
+            original_df['ENDDATE'] = original_df['ENDDATE'].dt.strftime('%Y-%m-%d')            
             # st.write("Original DF:")
             # st.info(original_df)
             # time.sleep(5)
@@ -125,9 +132,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
             # st.info(edited_df)
             # time.sleep(5)         
             try:
-                # Converti le date in formato stringa per il database
-                edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
-                edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
 
                 # Individua le righe eliminate confrontando gli ROWID
                 original_rowids = set(original_df['ROWID'].dropna())
@@ -217,6 +221,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
 
                                 actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                                 actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                                # Converti le date in formato stringa per il database
                                 wa = {
                                     "ROWID": row["ROWID"],
                                     "WOID": row["WOID"], 
