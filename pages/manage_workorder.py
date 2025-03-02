@@ -43,12 +43,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
 
     # Aggiungi qui la conversione da codice a nome per ACTGRP_L1
     df_wo_activity_display['ACTGRP_L1'] = df_wo_activity_display['ACTGRP_L1'].apply(
-        lambda code: modules.servant.get_name_from_code(st.session_state.df_tskgrl1, code, "NAME")
+        lambda code: modules.servant.get_description_from_code(st.session_state.df_tskgrl1, code, "NAME")
     )
     
     # Aggiungi qui la conversione da codice a nome per ACTGRP_L2
     df_wo_activity_display['ACTGRP_L2'] = df_wo_activity_display['ACTGRP_L2'].apply(
-        lambda code: modules.servant.get_name_from_code(st.session_state.df_tskgrl2, code, "NAME")
+        lambda code: modules.servant.get_description_from_code(st.session_state.df_tskgrl2, code, "NAME")
     )
 
     # Task Group Level 1 dropdown
