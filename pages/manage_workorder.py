@@ -166,13 +166,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
 #################################################
                 # Gestisci le nuove righe
                 new_rows_added = False
-                counter = 0
+                nr_row_created = 0
                 for idx, row in edited_df.iterrows():
                     # Controlla se il ROWID è None (nuova riga)
                     # st.write(row)
                     # time.sleep(5)
                     if pd.isna(row["ROWID"]):
-                        counter += 1
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
                         wa = {
@@ -192,6 +191,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             st.success(f"New work activity added successfully to WOID: {wa['WOID']}")
                             time.sleep(5)
                             new_rows_added = True
+                            nr_row_created += 1
                         else:
                             st.error(f"Failed to add new work activity with WOID: {wa['WOID']}")
                             time.sleep(7)
@@ -204,7 +204,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 # Gestisci gli aggiornamenti
                 for idx, row in edited_df.iterrows():
                     if not pd.isna(row["ROWID"]) and row["ROWID"] in original_rowids:
-#                        st.write(row)
+                        nr_row_modified = 0
                         # Trova la riga corrispondente nel dataframe originale
                         original_row = original_df[original_df["ROWID"] == row["ROWID"]].iloc[0] if not original_df[original_df["ROWID"] == row["ROWID"]].empty else None
                         # st.write(original_row)
@@ -241,26 +241,28 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                 rc = modules.sqlite_db.update_wo_activity(wa, conn)
                                 if rc:
                                     st.success(f"Work activity {wa['ROWID']} updated successfully!")
+                                    nr_row_modified += 1
                                     time.sleep(5)
                                 else:
                                     st.error(f"Failed to update work activity {wa['ROWID']}")
                                     time.sleep(7)
-                            else:
-                                # Debug: Stampa se la riga non è stata modificata
-                                st.write(f"Debug - Row {row['ROWID']} has NOT been modified.")
+
 
 ############################################
 
                 # Aggiorna il dataframe in session_state
-                st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
+                if nr_row_modified > 0 or nr_row_created > 0 or len(deleted_rowids) > 0:
+                    st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
-                # Incrementa il contatore di refresh per forzare il ricaricamento del widget
-                if 'refresh_counter' not in st.session_state:
-                    st.session_state.refresh_counter = 0
-                st.session_state.refresh_counter += 1
-                
-                # Ricarica la pagina per mostrare i dati aggiornati
-                st.rerun()
+                    # Incrementa il contatore di refresh per forzare il ricaricamento del widget
+                    if 'refresh_counter' not in st.session_state:
+                        st.session_state.refresh_counter = 0
+                    st.session_state.refresh_counter += 1
+                    
+                    # Ricarica la pagina per mostrare i dati aggiornati
+                    st.rerun()
+                else:
+                    st.warning(f"Nothing to save!")    
                     
             except Exception as e:
                 st.error(f"Error saving data in TORP_WO_ACTIVITY: {str(e)}")
