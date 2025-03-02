@@ -118,12 +118,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         )
 ##########################################        
         if st.button("Save"):
-            st.write("Original DF:")
-            st.info(original_df)
-            time.sleep(5)
-            st.write("Edited DF:")
-            st.info(edited_df)
-            time.sleep(5)         
+            # st.write("Original DF:")
+            # st.info(original_df)
+            # time.sleep(5)
+            # st.write("Edited DF:")
+            # st.info(edited_df)
+            # time.sleep(5)         
             try:
                 # Converti le date in formato stringa per il database
                 edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
@@ -165,8 +165,8 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 counter = 0
                 for idx, row in edited_df.iterrows():
                     # Controlla se il ROWID è None (nuova riga)
-                    st.write(row)
-                    time.sleep(5)
+                    # st.write(row)
+                    # time.sleep(5)
                     if pd.isna(row["ROWID"]):
                         counter += 1
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
@@ -200,20 +200,20 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 # Gestisci gli aggiornamenti
                 for idx, row in edited_df.iterrows():
                     if not pd.isna(row["ROWID"]) and row["ROWID"] in original_rowids:
-                        st.write(row)
+#                        st.write(row)
                         # Trova la riga corrispondente nel dataframe originale
                         original_row = original_df[original_df["ROWID"] == row["ROWID"]].iloc[0] if not original_df[original_df["ROWID"] == row["ROWID"]].empty else None
-                        st.write(original_row)
-                        
+                        # st.write(original_row)
+
                         if original_row is not None:
                             # Debug: Stampa i valori delle righe prima del confronto
-                            print(f"Debug - Row {row['ROWID']} (Edited): {row.to_dict()}")
-                            print(f"Debug - Row {row['ROWID']} (Original): {original_row.to_dict()}")
+                            # print(f"Debug - Row {row['ROWID']} (Edited): {row.to_dict()}")
+                            # print(f"Debug - Row {row['ROWID']} (Original): {original_row.to_dict()}")
 
                             # Verifica se la riga è stata modificata confrontando tutti i campi rilevanti
                             if not row.equals(original_row):
                                 # Debug: Stampa il risultato del confronto
-                                print(f"Debug - Row {row['ROWID']} has been modified.")
+                                # print(f"Debug - Row {row['ROWID']} has been modified.")
 
                                 actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                                 actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
@@ -231,12 +231,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                 }
 
                                 # Debug: Stampa i dati che verranno aggiornati nel database
-                                print(f"Debug - Updating row {wa['ROWID']} with data: {wa}")
+                                #print(f"Debug - Updating row {wa['ROWID']} with data: {wa}")
 
                                 rc = modules.sqlite_db.update_wo_activity(wa, conn)
                                 if rc:
                                     st.success(f"Work activity {wa['ROWID']} updated successfully!")
-                                    time.sleep(2)
+                                    time.sleep(5)
                                 else:
                                     st.error(f"Failed to update work activity {wa['ROWID']}")
                                     time.sleep(7)
