@@ -136,6 +136,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                         rc = modules.sqlite_db.delete_wo_activity(rowid, conn)
                         if not rc:
                             st.error(f"Failed to delete row with ROWID: {rowid}")
+                            time.sleep(7)
                     
                     st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
                 
@@ -219,7 +220,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 st.write("Error details:", e)
                 
     return edited_df
-    
+
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
     wo_id = selected_row_dict["WOID"]
