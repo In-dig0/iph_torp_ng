@@ -1278,11 +1278,11 @@ def delete_wo_activity(rowid, conn):
     """
     try:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM TORP_WO_ACTIVITY WHERE ROWID = ?", (rowid,))
+        cursor.execute("DELETE FROM TORP_WORKACTIVITY WHERE ROWID = ?", (rowid,))
         conn.commit()
         return True
     except Exception as e:
-        print(f"Error deleting row from TORP_WO_ACTIVITY: {str(e)}")
+        print(f"Error deleting row from TORP_WORKACTIVITY: {str(e)}")
         return False
 
 
