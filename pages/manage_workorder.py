@@ -115,7 +115,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
             },
             key=f"data_editor_{selected_row_dict['WOID']}_{st.session_state.get('refresh_counter', 0)}"
         )
-        
+##########################################        
         if st.button("Save"):
             try:
                 # Converti le date in formato stringa per il database
@@ -137,8 +137,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                         if not rc:
                             st.error(f"Failed to delete row with ROWID: {rowid}")
                             time.sleep(7)
+                        else:
+                            st.success(f"Row with ROWID: {rowid} deleted successfully!")
+                            time.sleep(2)
                     
-                        st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
+                    st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
+                    time.sleep(2)
                 
                 # Converti qui i nomi in codici prima di salvare
                 edited_df_save = edited_df.copy()
@@ -150,6 +154,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 )
 
                 # Gestisci le nuove righe
+                new_rows_added = False
                 if len(edited_df) > len(original_df) - len(deleted_rowids):
                     # Ottieni le nuove righe (quelle senza ROWID o con ROWID che non erano nell'originale)
                     for idx, row in edited_df.iterrows():
@@ -169,9 +174,17 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                 "DESCRIPTION": row.get("DESCRIPTION", "")
                             }
                             rc = modules.sqlite_db.insert_wo_activity(wa, conn)
+                            if rc:
+                                st.success(f"New work activity added successfully with WOID: {wa['WOID']}")
+                                time.sleep(2)
+                                new_rows_added = True
+                            else:
+                                st.error(f"Failed to add new work activity with WOID: {wa['WOID']}")
+                                time.sleep(7)
                     
-                    if len(edited_df) > len(original_df):
+                    if new_rows_added:
                         st.success("New work activities added successfully!")
+                        time.sleep(2)
                 
                 # Gestisci gli aggiornamenti
                 for idx, row in edited_df.iterrows():
@@ -204,7 +217,11 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                 }
                                 rc = modules.sqlite_db.update_wo_activity(wa, conn)
                                 if rc:
-                                    st.success(f"Work activities {wa["ROWID"]} updated successfully!")
+                                    st.success(f"Work activity {wa['ROWID']} updated successfully!")
+                                    time.sleep(2)
+                                else:
+                                    st.error(f"Failed to update work activity {wa['ROWID']}")
+                                    time.sleep(7)
 
                 # Aggiorna il dataframe in session_state
                 st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
@@ -220,8 +237,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
             except Exception as e:
                 st.error(f"Error saving data in TORP_WO_ACTIVITY: {str(e)}")
                 st.write("Error details:", e)
+                time.sleep(7)
                 
-    return edited_df
+        return edited_df
+
+#############################################
+
 
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
