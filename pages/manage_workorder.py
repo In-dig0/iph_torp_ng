@@ -45,13 +45,13 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         lambda code: modules.servant.get_description_from_code(st.session_state.df_tskgrl2, code, "NAME")
     )
 
-    # Dopo la conversione
-    st.write("Debug - Contenuto di df_wo_activity_display:")
-    st.write(df_wo_activity_display)
+    # # Dopo la conversione
+    # st.write("Debug - Contenuto di df_wo_activity_display:")
+    # st.write(df_wo_activity_display)
 
-    # Dopo la conversione
-    if df_wo_activity_display['ACTGRP_L1'].isnull().any() or (df_wo_activity_display['ACTGRP_L1'] == '').any():
-        st.warning("Alcuni valori ACTGRP_L1 sono vuoti dopo la conversione!")
+    # # Dopo la conversione
+    # if df_wo_activity_display['ACTGRP_L1'].isnull().any() or (df_wo_activity_display['ACTGRP_L1'] == '').any():
+    #     st.warning("Alcuni valori ACTGRP_L1 sono vuoti dopo la conversione!")
 
     # Task Group Level 1 dropdown
     tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
