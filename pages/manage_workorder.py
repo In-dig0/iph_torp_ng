@@ -152,40 +152,40 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 edited_df_save['ACTGRP_L2'] = edited_df['ACTGRP_L2'].apply(
                     lambda name: modules.servant.get_code_from_name(st.session_state.df_tskgrl2, name, "CODE")
                 )
-
+#################################################
                 # Gestisci le nuove righe
                 new_rows_added = False
-                if len(edited_df) > len(original_df) - len(deleted_rowids):
-                    # Ottieni le nuove righe (quelle senza ROWID o con ROWID che non erano nell'originale)
-                    for idx, row in edited_df.iterrows():
-                        if pd.isna(row["ROWID"]) or row["ROWID"] not in original_rowids:
-                            actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
-                            actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
-                            wa = {
-                                "ROWID": None,  # Sarà generato dal database
-                                "WOID": row["WOID"], 
-                                "TDTLID": row["TDTLID"], 
-                                "ACTGRP_L1": actgrp_l1_code, 
-                                "ACTGRP_L2": actgrp_l2_code, 
-                                "STATUS": row["STATUS"],
-                                "STARTDATE": row["STARTDATE"],
-                                "ENDDATE": row["ENDDATE"],
-                                "PROGRESS": row["PROGRESS"],
-                                "DESCRIPTION": row.get("DESCRIPTION", "")
-                            }
-                            rc = modules.sqlite_db.insert_wo_activity(wa, conn)
-                            if rc:
-                                st.success(f"New work activity added successfully with WOID: {wa['WOID']}")
-                                time.sleep(2)
-                                new_rows_added = True
-                            else:
-                                st.error(f"Failed to add new work activity with WOID: {wa['WOID']}")
-                                time.sleep(7)
-                    
-                    if new_rows_added:
-                        st.success("New work activities added successfully!")
-                        time.sleep(2)
+                counter = 0
+                for idx, row in edited_df.iterrows():
+                    # Controlla se il ROWID è None (nuova riga)
+                    if pd.isna(row["ROWID"]):
+                        counter += 1
+                        actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                        actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                        wa = {
+                            "ROWID": None,  # Sarà generato dal database
+                            "WOID": row["WOID"], 
+                            "TDTLID": row["TDTLID"], 
+                            "ACTGRP_L1": actgrp_l1_code, 
+                            "ACTGRP_L2": actgrp_l2_code, 
+                            "STATUS": row["STATUS"],
+                            "STARTDATE": row["STARTDATE"],
+                            "ENDDATE": row["ENDDATE"],
+                            "PROGRESS": row["PROGRESS"],
+                            "DESCRIPTION": row.get("DESCRIPTION", "")
+                        }
+                        rc = modules.sqlite_db.insert_wo_activity(wa, conn)
+                        if rc:
+                            st.success(f"New work activity added successfully to WOID: {wa['WOID']}")
+                            time.sleep(2)
+                            new_rows_added = True
+                        else:
+                            st.error(f"Failed to add new work activity with WOID: {wa['WOID']}")
+                            time.sleep(7)
 
+                if new_rows_added:
+                    st.success(f"New {counter} work activities added successfully!")
+                    time.sleep(2)
 ###################################################
 
                 # Gestisci gli aggiornamenti
