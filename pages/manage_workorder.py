@@ -223,7 +223,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
 
                 # Se non ci sono modifiche, mostra il messaggio e interrompi
                 if not has_changes:
-                    st.info("Nessun dato da salvare.")
+                    st.warning("No data to save!")
                     time.sleep(5)
                     return edited_df  # Interrompi l'esecuzione
 
