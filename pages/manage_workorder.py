@@ -36,6 +36,20 @@ def show_wo_activity_dialog(selected_row_dict, conn):
 
     df_wo_activity['STARTDATE'] = pd.to_datetime(df_wo_activity['STARTDATE'])
     df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
+    
+    # Converti i codici in nomi per la visualizzazione
+    # Assicurati che ci siano le colonne corrette nel dataframe
+    df_wo_activity_display = df_wo_activity.copy()
+
+    # Aggiungi qui la conversione da codice a nome per ACTGRP_L1
+    df_wo_activity_display['ACTGRP_L1'] = df_wo_activity_display['ACTGRP_L1'].apply(
+        lambda code: modules.servant.get_name_from_code(st.session_state.df_tskgrl1, code, "NAME")
+    )
+    
+    # Aggiungi qui la conversione da codice a nome per ACTGRP_L2
+    df_wo_activity_display['ACTGRP_L2'] = df_wo_activity_display['ACTGRP_L2'].apply(
+        lambda code: modules.servant.get_name_from_code(st.session_state.df_tskgrl2, code, "NAME")
+    )
 
     # Task Group Level 1 dropdown
     tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
@@ -117,8 +131,17 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 # Converti le date in formato stringa per il database
                 edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
                 edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
-                
-                # Verifica se ci sono più righe nell'edited_df rispetto all'originale
+
+
+                # Converti qui i nomi in codici prima di salvare
+                edited_df_save = edited_df.copy()
+                edited_df_save['ACTGRP_L1'] = edited_df['ACTGRP_L1'].apply(
+                    lambda name: modules.servant.get_code_from_name(st.session_state.df_tskgrl1, name, "CODE")
+                )
+                edited_df_save['ACTGRP_L2'] = edited_df['ACTGRP_L2'].apply(
+                    lambda name: modules.servant.get_code_from_name(st.session_state.df_tskgrl2, name, "CODE")
+                )
+
                 if len(edited_df) > len(df_wo_activity):
                     # Ottieni le nuove righe
                     new_rows = edited_df.iloc[len(df_wo_activity):]
