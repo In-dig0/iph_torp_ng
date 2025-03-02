@@ -174,8 +174,8 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             "PROGRESS": row["PROGRESS"],
                             "DESCRIPTION": row["DESCRIPTION"]
                             }                        
+                        st.info(wa)
                         rc = modules.sqlite_db.update_wo_activity(wa, conn)                   
-                    conn.commit()
                     st.success("Update successfully!")                    
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
 
