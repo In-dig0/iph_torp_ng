@@ -22,7 +22,7 @@ STATUS_ASSIGNED = "ASSIGNED"
 REQ_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED']
 
-def show_wo_phases_dialog(selected_row_dict, conn):
+def show_wo_activity_dialog(selected_row_dict, conn):
     # Ottieni il DataFrame filtrato
     #df_phases_wo = st.session_state.df_wo_phases[st.session_state.df_wo_phases["WOID"]==selected_row_dict["WOID"]]
     df_wo_activity = st.session_state.df_wo_activity[st.session_state.df_wo_activity["WOID"]==selected_row_dict["WOID"]]
@@ -148,7 +148,7 @@ def show_wo_phases_dialog(selected_row_dict, conn):
                 
                 elif not edited_df.equals(df_wo_activity):
                     for index, row in edited_df.iterrows():
-                        rc = modules.sqlite_db.update_wo_update_wo_activity(row, conn)                   
+                        rc = modules.sqlite_db.update_wo_activity(row, conn)                   
                     conn.commit()
                     st.success("Update successfully!")                    
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
@@ -559,7 +559,7 @@ def manage_workorder(conn):
         elif navbar_h == "WO Activity":
             st.subheader(":orange[WO Activity]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
-            show_wo_phases_dialog(selected_row_dict, conn)
+            show_wo_activity_dialog(selected_row_dict, conn)
     
 
 def main():
