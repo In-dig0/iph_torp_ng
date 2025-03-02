@@ -1264,7 +1264,26 @@ def update_wo_activity(row, conn):
     finally:
         if cursor:
             cursor.close() # Close the cursor in a finally block
-#####################
+
+def delete_wo_activity(rowid, conn):
+    """
+    Elimina una work activity dal database
+    
+    Parametri:
+    rowid (int): ROWID dekka riga da eliminare
+    conn (sqlite3.Connection): Connessione al database
+    
+    Returns:
+    bool: True se l'eliminazione è avvenuta con successo, False altrimenti
+    """
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM TORP_WO_ACTIVITY WHERE ROWID = ?", (rowid,))
+        conn.commit()
+        return True
+    except Exception as e:
+        print(f"Error deleting row from TORP_WO_ACTIVITY: {str(e)}")
+        return False
 
 
 def initialize_session_state(conn): #passo la connessione

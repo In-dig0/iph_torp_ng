@@ -52,6 +52,9 @@ def show_wo_activity_dialog(selected_row_dict, conn):
     selected_tdtlid = modules.servant.get_code_from_name(st.session_state.df_users, selected_row_dict["TDTL_NAME"], "CODE")
 
     with st.container(border=True):
+        # Salva una copia del dataframe originale per il confronto dopo la modifica
+        original_df = df_wo_activity_display.copy()
+        
         # Editor dei dati con configurazione aggiuntiva
         edited_df = st.data_editor(
             df_wo_activity_display,
@@ -119,6 +122,23 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
                 edited_df['ENDDATE'] = edited_df['ENDDATE'].dt.strftime('%Y-%m-%d')
 
+                # Individua le righe eliminate confrontando gli ROWID
+                original_rowids = set(original_df['ROWID'].dropna())
+                current_rowids = set(edited_df['ROWID'].dropna())
+                
+                # Trova gli ID delle righe che sono state eliminate
+                deleted_rowids = original_rowids - current_rowids
+                
+                # Elabora le righe eliminate
+                if deleted_rowids:
+                    for rowid in deleted_rowids:
+                        # Chiamare la funzione di eliminazione dal database
+                        rc = modules.sqlite_db.delete_wo_activity(rowid, conn)
+                        if not rc:
+                            st.error(f"Failed to delete row with ROWID: {rowid}")
+                    
+                    st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
+                
                 # Converti qui i nomi in codici prima di salvare
                 edited_df_save = edited_df.copy()
                 edited_df_save['ACTGRP_L1'] = edited_df['ACTGRP_L1'].apply(
@@ -128,50 +148,60 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                     lambda name: modules.servant.get_code_from_name(st.session_state.df_tskgrl2, name, "CODE")
                 )
 
-                if len(edited_df) > len(df_wo_activity):
-                    # Ottieni le nuove righe
-                    new_rows = edited_df.iloc[len(df_wo_activity):]
-                    for _, row in new_rows.iterrows():
-                        actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
-                        actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
-                        wa = {
-                            "ROWID": row["ROWID"],                            
-                            "WOID": row["WOID"], 
-                            "TDTLID": row["TDTLID"], 
-                            "ACTGRP_L1": actgrp_l1_code, 
-                            "ACTGRP_L2": actgrp_l2_code, 
-                            "STATUS": row["STATUS"],
-                            "STARTDATE": row["STARTDATE"],
-                            "ENDDATE": row["ENDDATE"],
-                            "PROGRESS": row["PROGRESS"],
-                            "DESCRIPTION": row["DESCRIPTION"]
+                # Gestisci le nuove righe
+                if len(edited_df) > len(original_df) - len(deleted_rowids):
+                    # Ottieni le nuove righe (quelle senza ROWID o con ROWID che non erano nell'originale)
+                    for idx, row in edited_df.iterrows():
+                        if pd.isna(row["ROWID"]) or row["ROWID"] not in original_rowids:
+                            actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                            actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                            wa = {
+                                "ROWID": None,  # Sarà generato dal database
+                                "WOID": row["WOID"], 
+                                "TDTLID": row["TDTLID"], 
+                                "ACTGRP_L1": actgrp_l1_code, 
+                                "ACTGRP_L2": actgrp_l2_code, 
+                                "STATUS": row["STATUS"],
+                                "STARTDATE": row["STARTDATE"],
+                                "ENDDATE": row["ENDDATE"],
+                                "PROGRESS": row["PROGRESS"],
+                                "DESCRIPTION": row.get("DESCRIPTION", "")
                             }
-                        rc = modules.sqlite_db.insert_wo_activity(wa, conn)
+                            rc = modules.sqlite_db.insert_wo_activity(wa, conn)
                     
-                    st.success("New work activity added successfully!")
-                    
-                elif not edited_df.equals(df_wo_activity):
-                    for index, row in edited_df.iterrows():
-                        actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
-                        actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
-                        wa = {
-                            "ROWID": row["ROWID"],
-                            "WOID": row["WOID"], 
-                            "TDTLID": row["TDTLID"], 
-                            "ACTGRP_L1": actgrp_l1_code, 
-                            "ACTGRP_L2": actgrp_l2_code, 
-                            "STATUS": row["STATUS"],
-                            "STARTDATE": row["STARTDATE"],
-                            "ENDDATE": row["ENDDATE"],
-                            "PROGRESS": row["PROGRESS"],
-                            "DESCRIPTION": row["DESCRIPTION"]
-                            }                        
-                        rc = modules.sqlite_db.update_wo_activity(wa, conn)                   
-                    st.success("Update successfully!")                    
+                    if len(edited_df) > len(original_df):
+                        st.success("New work activities added successfully!")
                 
-                else:
-                    st.info("Nothing to save!")
-                    return edited_df
+                # Gestisci gli aggiornamenti
+                for idx, row in edited_df.iterrows():
+                    if not pd.isna(row["ROWID"]) and row["ROWID"] in original_rowids:
+                        # Trova la riga corrispondente nel dataframe originale
+                        original_row = original_df[original_df["ROWID"] == row["ROWID"]].iloc[0] if not original_df[original_df["ROWID"] == row["ROWID"]].empty else None
+                        
+                        if original_row is not None:
+                            # Verifica se la riga è stata modificata
+                            if (row["ACTGRP_L1"] != original_row["ACTGRP_L1"] or
+                                row["ACTGRP_L2"] != original_row["ACTGRP_L2"] or
+                                row["STATUS"] != original_row["STATUS"] or
+                                row["STARTDATE"] != original_row["STARTDATE"] or
+                                row["ENDDATE"] != original_row["ENDDATE"] or
+                                row["PROGRESS"] != original_row["PROGRESS"]):
+                                
+                                actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
+                                actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
+                                wa = {
+                                    "ROWID": row["ROWID"],
+                                    "WOID": row["WOID"], 
+                                    "TDTLID": row["TDTLID"], 
+                                    "ACTGRP_L1": actgrp_l1_code, 
+                                    "ACTGRP_L2": actgrp_l2_code, 
+                                    "STATUS": row["STATUS"],
+                                    "STARTDATE": row["STARTDATE"],
+                                    "ENDDATE": row["ENDDATE"],
+                                    "PROGRESS": row["PROGRESS"],
+                                    "DESCRIPTION": row.get("DESCRIPTION", "")
+                                }
+                                rc = modules.sqlite_db.update_wo_activity(wa, conn)
                 
                 # Aggiorna il dataframe in session_state
                 st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
@@ -186,10 +216,10 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                     
             except Exception as e:
                 st.error(f"Error saving data in TORP_WO_ACTIVITY: {str(e)}")
-                st.write("Row data:", edited_df.to_dict())
+                st.write("Error details:", e)
                 
     return edited_df
-
+    
 def show_workorder_dialog(selected_row_dict, conn):
     """Visualizza e gestisci la finestra di dialogo dell'ordine di lavoro."""
     wo_id = selected_row_dict["WOID"]
