@@ -55,6 +55,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         # Salva una copia del dataframe originale per il confronto dopo la modifica
         original_df = df_wo_activity_display.copy()
         
+
         # Editor dei dati con configurazione aggiuntiva
         edited_df = st.data_editor(
             df_wo_activity_display,
@@ -117,6 +118,10 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         )
 ##########################################        
         if st.button("Save"):
+            st.write("Original DF:")
+            st.info(original_df)
+            st.write("Edited DF:")
+            st.info(edited_df)         
             try:
                 # Converti le date in formato stringa per il database
                 edited_df['STARTDATE'] = edited_df['STARTDATE'].dt.strftime('%Y-%m-%d')
@@ -158,6 +163,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 counter = 0
                 for idx, row in edited_df.iterrows():
                     # Controlla se il ROWID è None (nuova riga)
+                    st.write(row)
                     if pd.isna(row["ROWID"]):
                         counter += 1
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
