@@ -136,7 +136,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 if len(edited_df) > len(df_wo_activity):
                     # Ottieni le nuove righe
                     new_rows = edited_df.iloc[len(df_wo_activity):]
-                    
+                    st.info(new_rows)
                     for _, row in new_rows.iterrows():
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
@@ -152,12 +152,12 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             "PROGRESS": row["PROGRESS"],
                             "DESCRIPTION": row["DESCRIPTION"]
                             }
-                        #st.info(wa) 
-                        time.sleep(5)   
                         rc = modules.sqlite_db.insert_wo_activity(wa, conn)
+                        if rc == True:
+                            st.success(f"New work activity {wa} added successfully!")
                         time.sleep(5)   
                     
-                    st.success("New work activity added successfully!")
+                    #st.success("New work activity added successfully!")
                     st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
                 elif not edited_df.equals(df_wo_activity):
