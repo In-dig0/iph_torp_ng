@@ -242,7 +242,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                     time.sleep(7)
                             else:
                                 # Debug: Stampa se la riga non è stata modificata
-                                print(f"Debug - Row {row['ROWID']} has NOT been modified.")
+                                st.write(f"Debug - Row {row['ROWID']} has NOT been modified.")
 
 ############################################
 
