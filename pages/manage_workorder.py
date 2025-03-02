@@ -28,8 +28,8 @@ def show_wo_activity_dialog(selected_row_dict, conn):
     # Resetta l'indice e rimuovi la colonna dell'indice se presente
     df_wo_activity = df_wo_activity.reset_index(drop=True)
 
-    df_wo_activity['STARTDATE'] = pd.to_datetime(df_wo_activity['STARTDATE'])
-    df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
+    # df_wo_activity['STARTDATE'] = pd.to_datetime(df_wo_activity['STARTDATE'])
+    # df_wo_activity['ENDDATE'] = pd.to_datetime(df_wo_activity['ENDDATE'])
     
     # Converti i codici in nomi per la visualizzazione
     df_wo_activity_display = df_wo_activity.copy()
