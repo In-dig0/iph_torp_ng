@@ -1245,7 +1245,7 @@ def update_wo_activity(row, conn):
         """
         conn.execute(update_query, (
             row['ACTGRP_L1'],
-            row['ACTGRP_L2']               
+            row['ACTGRP_L2'],               
             row['STATUS'],
             row['STARTDATE'],
             row['ENDDATE'],
