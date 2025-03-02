@@ -141,6 +141,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
                         wa = {
+                            "ROWID": row["ROWID"],                            
                             "WOID": row["WOID"], 
                             "TDTLID": row["TDTLID"], 
                             "ACTGRP_L1": actgrp_l1_code, 
@@ -164,6 +165,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                         actgrp_l1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, row["ACTGRP_L1"], "CODE")
                         actgrp_l2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, row["ACTGRP_L2"], "CODE")
                         wa = {
+                            "ROWID": row["ROWID"],
                             "WOID": row["WOID"], 
                             "TDTLID": row["TDTLID"], 
                             "ACTGRP_L1": actgrp_l1_code, 
