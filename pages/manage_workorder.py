@@ -57,7 +57,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         edited_df = st.data_editor(
             df_wo_activity_display,
             use_container_width=True,
-            hide_index=True,
+            hide_index=False,
             num_rows="dynamic",
             column_config={
                 "WOID": st.column_config.TextColumn(

@@ -342,6 +342,7 @@ def load_wo_activity_data(conn):
     try:
         df_wo_activity = pd.read_sql_query("""
             SELECT 
+                A.rowid AS ROWID,
                 A.woid AS WOID, 
                 A.tdtlid AS TDTLID,
                 A.actgrp_l1 AS ACTGRP_L1,
@@ -1232,21 +1233,25 @@ def insert_wo_activity(row, conn):
 def update_wo_activity(row, conn):
     try:
         cursor = conn.cursor()
-        update_query = """
-        UPDATE TORP_WORKACTIVITY 
-        SET STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
-        WHERE WOID = ? AND TDTLID = ? AND ACTGRP_L1 = ? AND ACTGRP_L2 = ?
+        # update_query = """
+        # UPDATE TORP_WORKACTIVITY 
+        # SET STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
+        # WHERE WOID = ? AND TDTLID = ? AND ACTGRP_L1 = ? AND ACTGRP_L2 = ?
+        # """
+        update_query= = """
+        # UPDATE TORP_WORKACTIVITY 
+        # SET ACTGRP_L1 = ?, ACTGRP_L2 = ? , STATUS = ?, STARTDATE = ?, ENDDATE = ?, PROGRESS = ?, DESCRIPTION = ?
+        # WHERE ROWID = ?       
         """
         conn.execute(update_query, (
+            row['ACTGRP_L1'],
+            row['ACTGRP_L2']               
             row['STATUS'],
             row['STARTDATE'],
             row['ENDDATE'],
             row['PROGRESS'],
             row['DESCRIPTION'],
-            row['WOID'],
-            row['TDTLID'],
-            row['ACTGRP_L1'],
-            row['ACTGRP_L2']            
+            row['ROWID']        
         ))
     
         conn.commit()
