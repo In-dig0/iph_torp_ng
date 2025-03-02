@@ -138,7 +138,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                             st.error(f"Failed to delete row with ROWID: {rowid}")
                             time.sleep(7)
                     
-                    st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
+                        st.success(f"Deleted {len(deleted_rowids)} row(s) successfully!")
                 
                 # Converti qui i nomi in codici prima di salvare
                 edited_df_save = edited_df.copy()
@@ -203,7 +203,9 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                                     "DESCRIPTION": row.get("DESCRIPTION", "")
                                 }
                                 rc = modules.sqlite_db.update_wo_activity(wa, conn)
-                
+                                if rc:
+                                    st.success(f"Work activities {wa["ROWID"]} updated successfully!")
+
                 # Aggiorna il dataframe in session_state
                 st.session_state.df_wo_activity = modules.sqlite_db.load_wo_activity_data(conn)
                 
