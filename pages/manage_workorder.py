@@ -45,14 +45,6 @@ def show_wo_activity_dialog(selected_row_dict, conn):
         lambda code: modules.servant.get_description_from_code(st.session_state.df_tskgrl2, code, "NAME")
     )
 
-    # # Dopo la conversione
-    # st.write("Debug - Contenuto di df_wo_activity_display:")
-    # st.write(df_wo_activity_display)
-
-    # # Dopo la conversione
-    # if df_wo_activity_display['ACTGRP_L1'].isnull().any() or (df_wo_activity_display['ACTGRP_L1'] == '').any():
-    #     st.warning("Alcuni valori ACTGRP_L1 sono vuoti dopo la conversione!")
-
     # Task Group Level 1 dropdown
     tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
     tskgrl1_options = sorted(tskgrl1_options)
@@ -71,12 +63,14 @@ def show_wo_activity_dialog(selected_row_dict, conn):
                 "WOID": st.column_config.TextColumn(
                     "WOID",
                     help="Work Order ID",
-                    default=selected_row_dict["WOID"]
+                    default=selected_row_dict["WOID"],
+                    disabled=True
                 ),
                 "TDTLID": st.column_config.TextColumn(
                     "TDTLID",
                     help="Team Leader ID",
-                    default=selected_tdtlid
+                    default=selected_tdtlid,
+                    disabled=True                    
                 ),
                 "ACTGRP_L1": st.column_config.SelectboxColumn(
                     label="ACTIVITY_GRP_L1",
