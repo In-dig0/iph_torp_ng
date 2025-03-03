@@ -230,9 +230,9 @@ def create_workitem(conn)-> None:
                         new_time_qty = st.number_input(
                             ":blue[Time]",
                             min_value=0.0,
-                            max_value=24.0,
+                            max_value=8.0,
                             value=float(event_data['time_qty']),
-                            step=0.5,
+                            step=0.25,
                             format="%.1f"
                         )
 
@@ -532,7 +532,7 @@ def create_workitem(conn)-> None:
             execution_date = st.date_input(label=":blue[Execution Date]", value=default_date, format="DD/MM/YYYY")
 
             # Quantity
-            quantity = st.number_input(label=":blue[Time]", min_value=0.0, step=0.5, value=0.0, key="in_time_qty")
+            quantity = st.number_input(label=":blue[Time]", min_value=0.0, step=0.25, value=0.0, key="in_time_qty")
 
             # Description
             desc = st.text_input(label=":blue[Description]", key="ti_description")
