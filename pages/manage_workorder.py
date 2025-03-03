@@ -290,8 +290,6 @@ def show_workorder_dialog(selected_row_dict, conn):
             if not wo_description_filtered.empty:
                 wo_description_default = wo_description_filtered.values[0]
 
-
-            #woid = st.session_state.df_workorders[st.session_state.df_workorders["REQID"] == reqid]["WOID"]
             wo_type_options=["Standard", "APQP Project"]  #APQP -> ADVANCED PRODUCT QUALITY PLANNING"  
             wo_type_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["TYPE"]
             if not wo_type_filtered.empty:
@@ -515,7 +513,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                         st.session_state.grid_refresh = True
                         st.session_state.grid_response = None
                         st.success(f"Work order {wo_id} updated successfully!")
-                        st.session_state.df_workorder = modules.sqlite_db.load_workorders_data(conn)  # Ricarica i dati dal database
+                        st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)  # Ricarica i dati dal database
                         st.session_state.need_refresh = True
                         time.sleep(3)
                         reset_application_state()
@@ -544,7 +542,7 @@ def reset_application_state():
     
     # Forza il refresh cambiando la chiave 
     st.session_state.grid_refresh_key = str(time.time())     
-    st.rerun()
+    #st.rerun()
 
 def manage_workorder(conn):
 
@@ -557,17 +555,17 @@ def manage_workorder(conn):
         st.session_state.grid_refresh_key = "initial"    
 
 
-    df_workorder_grid = pd.DataFrame()
-    df_workorder_grid['WOID'] = st.session_state.df_workorders['WOID']
-    df_workorder_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(lambda tdtl_code: modules.servant.get_description_from_code(st.session_state.df_users, tdtl_code, "NAME"))
-    df_workorder_grid['STATUS'] = st.session_state.df_workorders['STATUS']
-    df_workorder_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
-    df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
-    df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
-    df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
+    df_workorders_grid = pd.DataFrame()
+    df_workorders_grid['WOID'] = st.session_state.df_workorders['WOID']
+    df_workorders_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(lambda tdtl_code: modules.servant.get_description_from_code(st.session_state.df_users, tdtl_code, "NAME"))
+    df_workorders_grid['STATUS'] = st.session_state.df_workorders['STATUS']
+    df_workorders_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
+    df_workorders_grid['TYPE'] = st.session_state.df_workorders['TYPE']
+    df_workorders_grid['REQID'] = st.session_state.df_workorders['REQID']
+    df_workorders_grid['TITLE'] = st.session_state.df_workorders['TITLE']
         
-    df_workorder_grid = pd.merge(
-        df_workorder_grid,
+    df_workorders_grid = pd.merge(
+        df_workorders_grid,
         st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
         on='REQID',
         how='left'
@@ -576,14 +574,14 @@ def manage_workorder(conn):
     
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
-        st.session_state.grid_data = df_workorder_grid.copy()  # Copia per evitare modifiche al DataFrame originale
+        st.session_state.grid_data = df_workorders_grid.copy()  # Copia per evitare modifiche al DataFrame originale
     if "grid_response" not in st.session_state:
         st.session_state.grid_response = None
 
 
     # Sidebar controls - Filters
     st.sidebar.header(":blue[Filters]")
-    wo_status_options = list(df_workorder_grid['STATUS'].drop_duplicates().sort_values())
+    wo_status_options = list(df_workorders_grid['STATUS'].drop_duplicates().sort_values())
     status_filter = st.sidebar.selectbox(
         ":orange[Status]", 
         wo_status_options, 
@@ -591,7 +589,7 @@ def manage_workorder(conn):
         key='Status_value'
     )
     
-    wo_tdtl_options = df_workorder_grid['TDTL_NAME'].drop_duplicates().sort_values()
+    wo_tdtl_options = df_workorders_grid['TDTL_NAME'].drop_duplicates().sort_values()
     tdtl_filter = st.sidebar.selectbox(
         ":orange[TD Team Leader]", 
         wo_tdtl_options, 
@@ -600,7 +598,7 @@ def manage_workorder(conn):
     )
 
     # Apply filters 
-    filtered_data = df_workorder_grid.copy() 
+    filtered_data = df_workorders_grid.copy() 
     if status_filter: 
         filtered_data = filtered_data[filtered_data["STATUS"] == status_filter] 
     if tdtl_filter: 
@@ -627,14 +625,46 @@ def manage_workorder(conn):
    
     st.info(navbar_h)
     if navbar_h == "Refresh":
-        # reset_application_state()
-        # st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database    
-        reset_application_state()
-        st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
-        st.session_state.grid_data = st.session_state.df_workorders.copy()  # Aggiorna i dati della griglia
-        st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")  # Ricrea la griglia    
-        st.session_state.grid_refresh_key = str(time.time())  # Aggiorna la chiave della griglia
-        st.info("Refresh completed!")  # Debug message
+        # Ricarica i dati dal database
+        st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)
+        
+        # Prepara i dati per la griglia
+        df_workorders_grid = pd.DataFrame()
+        df_workorders_grid['WOID'] = st.session_state.df_workorders['WOID']
+        df_workorders_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(
+            lambda tdtl_code: modules.servant.get_description_from_code(st.session_state.df_users, tdtl_code, "NAME"))
+        df_workorders_grid['STATUS'] = st.session_state.df_workorders['STATUS']
+        df_workorders_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
+        df_workorders_grid['TYPE'] = st.session_state.df_workorders['TYPE']
+        df_workorders_grid['REQID'] = st.session_state.df_workorders['REQID']
+        df_workorders_grid['TITLE'] = st.session_state.df_workorders['TITLE']
+        
+        # Unisci con i dati delle richieste
+        df_workorders_grid = pd.merge(
+            df_workorders_grid,
+            st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
+            on='REQID',
+            how='left'
+        )
+        
+        # Aggiorna i dati della griglia conservando i filtri
+        filtered_data = df_workorders_grid.copy()
+        status_filter = st.session_state.get('Status_value', None)
+        tdtl_filter = st.session_state.get('tdtl_value', None)
+        
+        if status_filter:
+            filtered_data = filtered_data[filtered_data["STATUS"] == status_filter]
+        if tdtl_filter:
+            filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter]
+        
+        # Aggiorna grid_data e genera una nuova chiave per forzare il refresh
+        st.session_state.grid_data = filtered_data
+        st.session_state.grid_refresh_key = str(time.time())
+        
+        # Mostra un messaggio di successo
+        st.success("Data refreshed successfully!")
+        
+        # Forza il refresh della pagina
         st.rerun()
     elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
         selected_rows_df = st.session_state.grid_response['selected_rows']
