@@ -336,30 +336,7 @@ def create_workitem(conn)-> None:
 
 
     # Load data only once and store in session state
-    session_data = {
-        'df_depts': modules.sqlite_db.load_dept_data,
-        'df_users': modules.sqlite_db.load_users_data,
-        'df_pline': modules.sqlite_db.load_pline_data,
-        'df_pfamily': modules.sqlite_db.load_pfamily_data,
-        'df_category': modules.sqlite_db.load_category_data,
-        'df_type': modules.sqlite_db.load_type_data,
-        'df_lk_type_category': modules.sqlite_db.load_lk_type_category_data,
-        'df_lk_category_detail': modules.sqlite_db.load_lk_category_detail_data,
-        'df_lk_pline_tdtl': modules.sqlite_db.load_lk_pline_tdtl_data,
-        'df_detail': modules.sqlite_db.load_detail_data,
-        'df_requests': modules.sqlite_db.load_requests_data,
-        'df_reqassignedto': modules.sqlite_db.load_reqassignedto_data,
-        'df_attachments': modules.sqlite_db.load_attachments_data,
-        'df_workorders': modules.sqlite_db.load_workorders_data,
-        'df_woassignedto': modules.sqlite_db.load_woassignedto_data,
-        'df_workitems': modules.sqlite_db.load_workitems_data,
-        'df_tskgrl1': modules.sqlite_db.load_tskgrl1_data,
-        'df_tskgrl2': modules.sqlite_db.load_tskgrl2_data,
-    }
-
-    for key, loader in session_data.items():
-        if key not in st.session_state:
-            st.session_state[key] = loader(conn)
+    initialize_session_state(conn)
 
     previus_xdays = datetime.now() - timedelta(days=10)
     previus_xdays = previus_xdays.date()
