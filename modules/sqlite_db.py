@@ -265,7 +265,8 @@ def load_tskgrl1_data(conn):
         df_tskgrl1 = pd.read_sql_query("""
             SELECT 
                 A.code AS CODE, 
-                A.name AS NAME
+                A.name AS NAME,
+                A.wo_type AS WO_TYPE
             FROM TORP_TASKGRP_L1 AS A
             ORDER by name
             """, conn)

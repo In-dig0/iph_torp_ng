@@ -47,7 +47,7 @@ def show_wo_activity_dialog(selected_row_dict, conn):
     )
 
     # Task Group Level 1 dropdown
-    tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
+    tskgrl1_options = st.session_state.df_tskgrl1[st.session_state.df_tskgrl1["WO_TYPE"] == selected_row_dict["TYPE"]]["NAME"].tolist()
     tskgrl1_options = sorted(tskgrl1_options)
     tskgrl2_options = st.session_state.df_tskgrl2["NAME"].tolist()
     tskgrl2_options = sorted(tskgrl2_options)
