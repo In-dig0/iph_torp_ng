@@ -340,7 +340,7 @@ def create_workitem(conn)-> None:
 
     previus_xdays = datetime.now() - timedelta(days=10)
     previus_xdays = previus_xdays.date()
-
+    previus_xdays = datetime.strptime(previus_xdays, "%Y-%m-%d").date()
 
     if "df_out" not in st.session_state:
         # Converti la colonna in datetime, gestendo eventuali errori
@@ -358,8 +358,15 @@ def create_workitem(conn)-> None:
 
     # Reload workitems if needed
     if 'reload_needed' in st.session_state and st.session_state.reload_needed:
+        # Carica i workitems
         st.session_state.df_workitems = modules.sqlite_db.load_workitems_data(conn)
+        
+        # Converti la colonna REFDATE in datetime (se non lo è già)
+        st.session_state.df_workitems["REFDATE"] = pd.to_datetime(st.session_state.df_workitems["REFDATE"], errors="coerce")
+        # Filtra i workitems in base alla data
         st.session_state.df_out = st.session_state.df_workitems[st.session_state.df_workitems["REFDATE"].dt.date > previus_xdays].copy()
+        
+        # Rimuovi il flag di ricarica
         del st.session_state.reload_needed
 
     tdsp_woassignedto_names_df = st.session_state.df_users[st.session_state.df_users["DEPTCODE"]=="DTD"]["NAME"]
