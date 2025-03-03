@@ -481,8 +481,13 @@ def create_workitem(conn)-> None:
                 key="sb_wo"
                 )
 
+
             # Task Group Level 1 dropdown
             tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
+            # if wa_linked:
+            #     tskgrl1_options = tskgrl1_options[
+            #         tskgrl1_options["NAME"].isin(st.session_state.df_wo_activity["NAME"])
+            #     ]
             selected_tskgrl1 = st.selectbox(
                 label=":blue[TaskGroup L1]", 
                 options=tskgrl1_options, 
