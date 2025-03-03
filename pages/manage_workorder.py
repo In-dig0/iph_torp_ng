@@ -409,7 +409,7 @@ def show_workorder_dialog(selected_row_dict, conn):
                 index=wo_type_index, 
                 disabled=False)
 
-            if wo_type == "APQP Project":
+            if wo_type == "APQP_Project":
                 wo_proj_class = st.selectbox(
                     label=":orange[Project Class]", 
                     options=wo_proj_class_options, 
