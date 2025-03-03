@@ -292,7 +292,7 @@ def show_workorder_dialog(selected_row_dict, conn):
             if not wo_description_filtered.empty:
                 wo_description_default = wo_description_filtered.values[0]
 
-            wo_type_options=["Standard", "APQP Project"]  #APQP -> ADVANCED PRODUCT QUALITY PLANNING"  
+            wo_type_options=["Standard", "APQP_Project"]  #APQP -> ADVANCED PRODUCT QUALITY PLANNING"  
             wo_type_filtered = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == wo_id]["TYPE"]
             if not wo_type_filtered.empty:
                 wo_type_default = wo_type_filtered.values[0]
