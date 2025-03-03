@@ -488,7 +488,7 @@ def create_workitem(conn)-> None:
             wa_linked = st.toggle("Referred to Work Activiy")
             if wa_linked:
                 filtered_workorder_df = filtered_workorder_df[
-                    (filtered_workorder_df["WOID"] == df_workactivity["WOID"])
+                    (filtered_workorder_df["WOID"] == st.session_state.df_wo_activity["WOID"])
                     ]
                 if not filtered_workorder_df.empty:  # Check if the DataFrame is not empty
                     filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Extract WOIDs and convert to a sorted list
