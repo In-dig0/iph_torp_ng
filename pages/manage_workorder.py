@@ -558,7 +558,7 @@ def manage_workorder(conn):
     if "grid_refresh_key" not in st.session_state: 
         st.session_state.grid_refresh_key = "initial"    
 
-    def refresh_grid()
+    def refresh_grid():
        # 1. Rimuovere tutte le selezioni
         if 'selected_rows' in st.session_state:
             del st.session_state.selected_rows
