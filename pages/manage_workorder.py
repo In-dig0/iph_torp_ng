@@ -549,7 +549,6 @@ def reset_application_state():
     #st.rerun()
 
 def manage_workorder(conn):
-
     modules.sqlite_db.initialize_session_state(conn)
     if "grid_data" not in st.session_state:
         st.session_state.grid_data = st.session_state.df_workorders.copy()
@@ -629,7 +628,7 @@ def manage_workorder(conn):
     
     # Inizializzazione della sessione
     if "grid_data" not in st.session_state:
-        st.session_state.grid_data = df_workorders_grid.copy()  # Copia per evitare modifiche al DataFrame originale
+        st.session_state.grid_data = df_workorders_grid.copy()
     if "grid_response" not in st.session_state:
         st.session_state.grid_response = None
 
@@ -674,35 +673,9 @@ def manage_workorder(conn):
         }
     )
 
-#############################
-    # Sezione 1: Prepara i dati prima di creare la griglia
-    if 'grid_refresh_key' not in st.session_state:
-        st.session_state.grid_refresh_key = 'initial'
     # Gestisci il click sul pulsante Refresh
     if navbar_h == "Refresh":
-        refresh_grid()       
-        # Verifica che grid_data esista prima di creare la griglia
-        if 'grid_data' in st.session_state and not st.session_state.grid_data.empty:
-            # Crea una chiave unica per la griglia
-            grid_key = f"main_grid_{st.session_state.grid_refresh_key}"
-            
-            # Titolo
-            st.subheader(":orange[Work Order list]")
-            
-            # Debug - mostra quante righe ci sono nei dati (rimuovere in produzione)
-            st.write(f"Rows available: {len(st.session_state.grid_data)}")
-            
-            # Crea la griglia con i dati aggiornati
-            st.session_state.grid_response = modules.servant.create_grid(
-                st.session_state.grid_data, 
-                grid_key,
-                # Aggiungi eventuali altri parametri necessari per la griglia
-            )
-        else:
-            st.subheader(":orange[Work Order list]")
-            st.warning("No data available. Please refresh or check database connection.")   
-
-#############################    
+        refresh_grid()
     elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
         selected_rows_df = st.session_state.grid_response['selected_rows']
         
@@ -718,6 +691,21 @@ def manage_workorder(conn):
             st.subheader(":orange[WO Activity]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_activity_dialog(selected_row_dict, conn)
+    
+    # Mostra la griglia SEMPRE, indipendentemente dalla selezione del navbar
+    # Questo blocco deve essere eseguito in tutti i casi tranne quando si fa il refresh
+    if navbar_h != "Refresh":
+        # Crea una chiave unica per la griglia
+        grid_key = f"main_grid_{st.session_state.grid_refresh_key}"
+        
+        # Titolo
+        st.subheader(":orange[Work Order list]")
+        
+        # Crea la griglia con i dati aggiornati
+        st.session_state.grid_response = modules.servant.create_grid(
+            st.session_state.grid_data, 
+            grid_key
+        )
     
 
 def main():
