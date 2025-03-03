@@ -482,11 +482,14 @@ def create_workitem(conn)-> None:
                 )
 
             if selected_workorder:
-                selected_wo_type = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == selected_workorder]["TYPE"]
-            # Task Group Level 1 dropdown
+                # Estrai il valore singolo di "TYPE" per il WOID selezionato
+                selected_wo_type = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == selected_workorder]["TYPE"].iloc[0]
+                
+                # Filtra il dataframe df_tskgrl1 in base al tipo di workorder selezionato
                 filtered_tskgrl1 = st.session_state.df_tskgrl1[st.session_state.df_tskgrl1["WO_TYPE"] == selected_wo_type]["NAME"]
                 tskgrl1_options = sorted(filtered_tskgrl1.tolist())
             else:
+                # Se non è selezionato alcun workorder, mostra tutte le opzioni
                 filtered_tskgrl1 = st.session_state.df_tskgrl1["NAME"]
                 tskgrl1_options = sorted(filtered_tskgrl1.tolist())
 
