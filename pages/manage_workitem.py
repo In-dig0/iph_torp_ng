@@ -482,7 +482,7 @@ def create_workitem(conn)-> None:
                 )
 
             if selected_workorder:
-                selected_wo_type = df_workorders[selected_workorders["WOID"] == selected_workorder]["TYPE"]
+                selected_wo_type = st.session_state.df_workorders[st.session_state.df_workorders["WOID"] == selected_workorder]["TYPE"]
             # Task Group Level 1 dropdown
                 filtered_tskgrl1 = st.session_state.df_tskgrl1[st.session_state.df_tskgrl1["WO_TYPE"] == selected_wo_type]["NAME"]
                 tskgrl1_options = sorted(filtered_tskgrl1.tolist())
