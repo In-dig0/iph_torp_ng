@@ -625,7 +625,7 @@ def manage_workorder(conn):
     st.subheader(":orange[Work Order list]")
     st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
    
-   
+    st.info(navbar_h)
     if navbar_h == "Refresh":
         # reset_application_state()
         # st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database    
