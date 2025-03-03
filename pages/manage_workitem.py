@@ -472,7 +472,7 @@ def create_workitem(conn)-> None:
                 if not filtered_workorder_df.empty:  # Controlla se il DataFrame non è vuoto
                     filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Estrai i WOID e convertili in una lista ordinata
                 else:
-                    filtered_workorder_list = []  #
+                    filtered_workorder_list = [] # Gestisci il caso in cui non vengano trovati ordini di lavoro
 
             selected_workorder = st.selectbox(
                 label=":blue[Work Order]",
@@ -481,9 +481,15 @@ def create_workitem(conn)-> None:
                 key="sb_wo"
                 )
 
-
+            if selected_workorder:
+                selected_wo_type = df_workorders[selected_workorders["WOID"] == selected_workorder]["TYPE"]
             # Task Group Level 1 dropdown
-            tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
+                filtered_tskgrl1 = st.session_state.df_tskgrl1[st.session_state.df_tskgrl1["WO_TYPE"] == selected_wo_type]["NAME"]
+                tskgrl1_options = sorted(filtered_tskgrl1.tolist())
+            else:
+                filtered_tskgrl1 = st.session_state.df_tskgrl1["NAME"]
+                tskgrl1_options = sorted(filtered_tskgrl1.tolist())
+
             # if wa_linked:
             #     tskgrl1_options = tskgrl1_options[
             #         tskgrl1_options["NAME"].isin(st.session_state.df_wo_activity["NAME"])
