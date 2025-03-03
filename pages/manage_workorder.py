@@ -25,8 +25,7 @@ WO_STATUS_OPTIONS = ['NEW', 'PENDING', 'ASSIGNED', 'WIP', 'COMPLETED', 'DELETED'
 def show_wo_activity_dialog(selected_row_dict, conn):
     # Ottieni il DataFrame filtrato
     df_wo_activity = st.session_state.df_wo_activity[
-        (st.session_state.df_wo_activity["WOID"]==selected_row_dict["WOID"]) &
-        (st.session_state.df_wo_activity["TYPE"]==selected_row_dict["TYPE"])
+        (st.session_state.df_wo_activity["WOID"]==selected_row_dict["WOID"])
     ]
     # Resetta l'indice e rimuovi la colonna dell'indice se presente
     df_wo_activity = df_wo_activity.reset_index(drop=True)
