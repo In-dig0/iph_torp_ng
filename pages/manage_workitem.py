@@ -336,7 +336,7 @@ def create_workitem(conn)-> None:
 
 
     # Load data only once and store in session state
-    initialize_session_state(conn)
+    modules.sqlite_db.initialize_session_state(conn)
 
     previus_xdays = datetime.now() - timedelta(days=10)
     previus_xdays = previus_xdays.date()
