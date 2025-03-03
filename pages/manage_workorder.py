@@ -673,6 +673,21 @@ def manage_workorder(conn):
         }
     )
 
+        # Mostra la griglia SEMPRE, indipendentemente dalla selezione del navbar
+    # Questo blocco deve essere eseguito in tutti i casi tranne quando si fa il refresh
+    if navbar_h != "Refresh":
+        # Crea una chiave unica per la griglia
+        grid_key = f"main_grid_{st.session_state.grid_refresh_key}"
+        
+        # Titolo
+        st.subheader(":orange[Work Order list]")
+        
+        # Crea la griglia con i dati aggiornati
+        st.session_state.grid_response = modules.servant.create_grid(
+            st.session_state.grid_data, 
+            grid_key
+        )
+
     # Gestisci il click sul pulsante Refresh
     if navbar_h == "Refresh":
         refresh_grid()
@@ -699,20 +714,7 @@ def manage_workorder(conn):
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_activity_dialog(selected_row_dict, conn)
 
-    # Mostra la griglia SEMPRE, indipendentemente dalla selezione del navbar
-    # Questo blocco deve essere eseguito in tutti i casi tranne quando si fa il refresh
-    if navbar_h != "Refresh":
-        # Crea una chiave unica per la griglia
-        grid_key = f"main_grid_{st.session_state.grid_refresh_key}"
-        
-        # Titolo
-        st.subheader(":orange[Work Order list]")
-        
-        # Crea la griglia con i dati aggiornati
-        st.session_state.grid_response = modules.servant.create_grid(
-            st.session_state.grid_data, 
-            grid_key
-        )
+
     
 
 def main():
