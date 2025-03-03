@@ -474,6 +474,7 @@ def create_workitem(conn)-> None:
                 selected_tdsp_code = modules.servant.get_code_from_name(st.session_state.df_users, selected_td_specialist_form, "CODE")
 
 
+            wa_linked = st.toggle("Referred to Work Activiy")
             # Correctly filter and extract Work Order IDs
             filtered_workorder_df = st.session_state.df_woassignedto[
                 st.session_state.df_woassignedto["TDSPID"] == selected_tdsp_code
@@ -482,8 +483,8 @@ def create_workitem(conn)-> None:
             if not filtered_workorder_df.empty:  # Check if the DataFrame is not empty
                 filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Extract WOIDs and convert to a sorted list
             else:
-                filtered_workorder_list = []  # Handle the case where no work orders are found
-
+                filtered_workorder_list = []  # Handle the case where no work orders are found            
+            
             selected_workorder = st.selectbox(
                 label=":blue[Work Order]",
                 options=filtered_workorder_list,
