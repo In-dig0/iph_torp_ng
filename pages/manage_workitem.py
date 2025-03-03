@@ -462,15 +462,17 @@ def create_workitem(conn)-> None:
             else:
                 filtered_workorder_list = []  # Handle the case where no work orders are found            
             
-            wa_linked = st.toggle("Referred to Work Activiy")
+            wa_linked = st.toggle("Referred to Work Activity")
             if wa_linked:
+                # Filtra il dataframe in base ai WOID presenti in df_wo_activity
                 filtered_workorder_df = filtered_workorder_df[
-                    (filtered_workorder_df["WOID"] == st.session_state.df_wo_activity["WOID"])
-                    ]
-                if not filtered_workorder_df.empty:  # Check if the DataFrame is not empty
-                    filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Extract WOIDs and convert to a sorted list
+                    filtered_workorder_df["WOID"].isin(st.session_state.df_wo_activity["WOID"])
+                ]
+                
+                if not filtered_workorder_df.empty:  # Controlla se il DataFrame non è vuoto
+                    filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Estrai i WOID e convertili in una lista ordinata
                 else:
-                    filtered_workorder_list = []  # Handle the case where no work orders are found 
+                    filtered_workorder_list = []  #
 
             selected_workorder = st.selectbox(
                 label=":blue[Work Order]",
