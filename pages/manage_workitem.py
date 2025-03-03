@@ -340,7 +340,7 @@ def create_workitem(conn)-> None:
 
     previus_xdays = datetime.now() - timedelta(days=10)
     previus_xdays = previus_xdays.date()
-    previus_xdays = datetime.strptime(previus_xdays, "%Y-%m-%d").date()
+    #previus_xdays = datetime.strptime(previus_xdays, "%Y-%m-%d").date()
 
     if "df_out" not in st.session_state:
         # Converti la colonna in datetime, gestendo eventuali errori
