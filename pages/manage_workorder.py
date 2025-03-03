@@ -676,8 +676,15 @@ def manage_workorder(conn):
     # Gestisci il click sul pulsante Refresh
     if navbar_h == "Refresh":
         refresh_grid()
+    # Con questa versione corretta
     elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
-        selected_rows_df = st.session_state.grid_response['selected_rows']
+        # Verifica prima che grid_response esista e non sia None
+        if st.session_state.grid_response is None:
+            st.warning("Please refresh the data and select a row first!", icon="⚠️")
+            return
+        
+        # Ora possiamo accedere a selected_rows in sicurezza
+        selected_rows_df = st.session_state.grid_response.get('selected_rows')
         
         if selected_rows_df is None or len(selected_rows_df) == 0:
             st.warning("Please select a grid row first!", icon="⚠️")
@@ -691,7 +698,7 @@ def manage_workorder(conn):
             st.subheader(":orange[WO Activity]")
             selected_row_dict = selected_rows_df.iloc[0].to_dict()
             show_wo_activity_dialog(selected_row_dict, conn)
-    
+
     # Mostra la griglia SEMPRE, indipendentemente dalla selezione del navbar
     # Questo blocco deve essere eseguito in tutti i casi tranne quando si fa il refresh
     if navbar_h != "Refresh":
