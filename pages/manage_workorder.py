@@ -627,8 +627,15 @@ def manage_workorder(conn):
    
    
     if navbar_h == "Refresh":
+        # reset_application_state()
+        # st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database    
         reset_application_state()
         st.session_state.df_workorders = modules.sqlite_db.load_workorder_data(conn)  # Ricarica i dati dal database
+        st.session_state.grid_data = st.session_state.df_workorders.copy()  # Aggiorna i dati della griglia
+        st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")  # Ricrea la griglia    
+        st.session_state.grid_refresh_key = str(time.time())  # Aggiorna la chiave della griglia
+        st.info("Refresh completed!")  # Debug message
+        st.rerun()
     elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
         selected_rows_df = st.session_state.grid_response['selected_rows']
         
