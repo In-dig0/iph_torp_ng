@@ -525,16 +525,20 @@ def show_workorder_dialog(selected_row_dict, conn):
 def reset_application_state():
     """Reset all session state variables and cached data"""
     # Lista delle chiavi di sessione da eliminare
+#     keys_to_clear = [
+#         'grid_data',
+#         'grid_response',
+#         'dialog_shown',
+#         'need_refresh',
+#         'main_grid',  # Chiave della griglia AgGrid
+# #            'Status_value',  # Chiave del filtro status nella sidebar
+#         'selected_rows' # Chiave della selezione delle righe
+#     ]
     keys_to_clear = [
-        'grid_data',
-        'grid_response',
-        'dialog_shown',
-        'need_refresh',
-        'main_grid',  # Chiave della griglia AgGrid
-#            'Status_value',  # Chiave del filtro status nella sidebar
-        'selected_rows' # Chiave della selezione delle righe
+    'grid_response',
+    'selected_rows',
+    'dialog_shown'
     ]
-    
     # Rimuovi tutte le chiavi di sessione specificate
     for key in keys_to_clear:
         if key in st.session_state:
@@ -619,52 +623,63 @@ def manage_workorder(conn):
         }
     )
 
-    # Create grid
-    st.subheader(":orange[Work Order list]")
-    st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
+    # # Create grid
+    # st.subheader(":orange[Work Order list]")
+    # st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, "main_grid")
    
+    # Create grid - assicurati che la chiave cambi ad ogni refresh
+    grid_key = f"main_grid_{st.session_state.get('grid_refresh_key', 'initial')}"
+    st.subheader(":orange[Work Order list]")
+    st.session_state.grid_response = modules.servant.create_grid(st.session_state.grid_data, grid_key)
+
     st.info(navbar_h)
     if navbar_h == "Refresh":
-        # Ricarica i dati dal database
+        # 1. Rimuovere tutte le selezioni
+        if 'selected_rows' in st.session_state:
+            del st.session_state.selected_rows
+        
+        # 2. Ricarica i dati dal database - assicurati di usare il nome funzione corretto
+        # Correggi il nome della funzione (singolare o plurale)
         st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)
         
-        # Prepara i dati per la griglia
-        df_workorders_grid = pd.DataFrame()
-        df_workorders_grid['WOID'] = st.session_state.df_workorders['WOID']
-        df_workorders_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(
+        # 3. Ricostruisci completamente il dataframe per la griglia
+        df_workorder_grid = pd.DataFrame()
+        df_workorder_grid['WOID'] = st.session_state.df_workorders['WOID']
+        df_workorder_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(
             lambda tdtl_code: modules.servant.get_description_from_code(st.session_state.df_users, tdtl_code, "NAME"))
-        df_workorders_grid['STATUS'] = st.session_state.df_workorders['STATUS']
-        df_workorders_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
-        df_workorders_grid['TYPE'] = st.session_state.df_workorders['TYPE']
-        df_workorders_grid['REQID'] = st.session_state.df_workorders['REQID']
-        df_workorders_grid['TITLE'] = st.session_state.df_workorders['TITLE']
+        df_workorder_grid['STATUS'] = st.session_state.df_workorders['STATUS']
+        df_workorder_grid['INSDATE'] = st.session_state.df_workorders['INSDATE']    
+        df_workorder_grid['TYPE'] = st.session_state.df_workorders['TYPE']
+        df_workorder_grid['REQID'] = st.session_state.df_workorders['REQID']
+        df_workorder_grid['TITLE'] = st.session_state.df_workorders['TITLE']
         
-        # Unisci con i dati delle richieste
-        df_workorders_grid = pd.merge(
-            df_workorders_grid,
+        # Merge con i dati delle richieste
+        df_workorder_grid = pd.merge(
+            df_workorder_grid,
             st.session_state.df_requests[['REQID', 'DUEDATE_TD']],
             on='REQID',
             how='left'
         )
         
-        # Aggiorna i dati della griglia conservando i filtri
-        filtered_data = df_workorders_grid.copy()
-        status_filter = st.session_state.get('Status_value', None)
-        tdtl_filter = st.session_state.get('tdtl_value', None)
+        # 4. Applica i filtri se presenti
+        filtered_data = df_workorder_grid.copy()
+        if 'Status_value' in st.session_state and st.session_state.Status_value:
+            filtered_data = filtered_data[filtered_data["STATUS"] == st.session_state.Status_value]
+        if 'tdtl_value' in st.session_state and st.session_state.tdtl_value:
+            filtered_data = filtered_data[filtered_data["TDTL_NAME"] == st.session_state.tdtl_value]
         
-        if status_filter:
-            filtered_data = filtered_data[filtered_data["STATUS"] == status_filter]
-        if tdtl_filter:
-            filtered_data = filtered_data[filtered_data["TDTL_NAME"] == tdtl_filter]
-        
-        # Aggiorna grid_data e genera una nuova chiave per forzare il refresh
+        # 5. Aggiorna i dati della griglia e invalida grid_response
         st.session_state.grid_data = filtered_data
+        if 'grid_response' in st.session_state:
+            del st.session_state.grid_response
+        
+        # 6. Genera una nuova chiave per il grid refresh
         st.session_state.grid_refresh_key = str(time.time())
         
-        # Mostra un messaggio di successo
+        # 7. Mostra un messaggio di successo
         st.success("Data refreshed successfully!")
         
-        # Forza il refresh della pagina
+        # 8. Forza il rerun DOPO aver fatto tutte le modifiche
         st.rerun()
     elif navbar_h == "Modify Work Order" or navbar_h == "WO Activity":
         selected_rows_df = st.session_state.grid_response['selected_rows']
