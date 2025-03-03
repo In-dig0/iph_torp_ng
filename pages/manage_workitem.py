@@ -474,7 +474,7 @@ def create_workitem(conn)-> None:
                 selected_tdsp_code = modules.servant.get_code_from_name(st.session_state.df_users, selected_td_specialist_form, "CODE")
 
 
-            wa_linked = st.toggle("Referred to Work Activiy")
+
             # Correctly filter and extract Work Order IDs
             filtered_workorder_df = st.session_state.df_woassignedto[
                 st.session_state.df_woassignedto["TDSPID"] == selected_tdsp_code
@@ -485,6 +485,16 @@ def create_workitem(conn)-> None:
             else:
                 filtered_workorder_list = []  # Handle the case where no work orders are found            
             
+            wa_linked = st.toggle("Referred to Work Activiy")
+            if wa_linked:
+                filtered_workorder_df = filtered_workorder_df[
+                    (filtered_workorder_df["WOID"] == df_workactivity["WOID"])
+                    ]
+                if not filtered_workorder_df.empty:  # Check if the DataFrame is not empty
+                    filtered_workorder_list = sorted(filtered_workorder_df["WOID"].tolist())  # Extract WOIDs and convert to a sorted list
+                else:
+                    filtered_workorder_list = []  # Handle the case where no work orders are found 
+
             selected_workorder = st.selectbox(
                 label=":blue[Work Order]",
                 options=filtered_workorder_list,
@@ -494,12 +504,22 @@ def create_workitem(conn)-> None:
 
             # Task Group Level 1 dropdown
             tskgrl1_options = st.session_state.df_tskgrl1["NAME"].tolist()
-            selected_tskgrl1 = st.selectbox(label=":blue[TaskGroup L1]", options=tskgrl1_options, index=None, key="sb_tskgrl1")
+            selected_tskgrl1 = st.selectbox(
+                label=":blue[TaskGroup L1]", 
+                options=tskgrl1_options, 
+                index=None, 
+                key="sb_tskgrl1"
+            )
             selected_tskgrl1_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl1, selected_tskgrl1, "CODE")
 
             # Task Group Level 2 dropdown (dependent on Level 1)
             tskgrl2_options = st.session_state.df_tskgrl2[st.session_state.df_tskgrl2['PCODE'] == selected_tskgrl1_code]['NAME'].unique()
-            selected_tskgrl2 = st.selectbox(label=":blue[TaskGroup L2]", options=tskgrl2_options, index=None, key="sb_tskgrl2")
+            selected_tskgrl2 = st.selectbox(
+                label=":blue[TaskGroup L2]", 
+                options=tskgrl2_options, 
+                index=None, 
+                key="sb_tskgrl2"
+            )
             selected_tskgrl2_code = modules.servant.get_code_from_name(st.session_state.df_tskgrl2, selected_tskgrl2, "CODE")
 
             # Execution Date

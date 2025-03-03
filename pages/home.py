@@ -6,7 +6,7 @@ import modules.sqlite_db
 # Global constants
 APPNAME = "TORP" #IPH Technical Office Request POC (Proof Of Concept)
 APPCODE = "TORP"
-APPVERSION = "0.2"
+APPVERSION = "0.3"
 
 def dispaly_home_page():
     st.header(f":blue[{APPNAME} Web Application]", divider="grey")
