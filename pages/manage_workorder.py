@@ -558,14 +558,19 @@ def manage_workorder(conn):
         st.session_state.grid_refresh_key = "initial"    
 
     def refresh_grid():
-       # 1. Rimuovere tutte le selezioni
+        # 1. Rimuovere tutte le selezioni
         if 'selected_rows' in st.session_state:
             del st.session_state.selected_rows
         
         # 2. Ricarica i dati dal database
         st.session_state.df_workorders = modules.sqlite_db.load_workorders_data(conn)
         
-        # 3. Ricostruisci completamente il dataframe per la griglia
+        # 3. Verifica che i dati siano stati caricati correttamente
+        if st.session_state.df_workorders is None:
+            st.error("Failed to load work orders data.")
+            return
+        
+        # 4. Ricostruisci completamente il dataframe per la griglia
         df_workorder_grid = pd.DataFrame()
         df_workorder_grid['WOID'] = st.session_state.df_workorders['WOID']
         df_workorder_grid['TDTL_NAME'] = st.session_state.df_workorders['TDTLID'].apply(
@@ -584,30 +589,29 @@ def manage_workorder(conn):
             how='left'
         )
         
-        # 4. Applica i filtri se presenti
+        # 5. Applica i filtri se presenti
         filtered_data = df_workorder_grid.copy()
         if 'Status_value' in st.session_state and st.session_state.Status_value:
             filtered_data = filtered_data[filtered_data["STATUS"] == st.session_state.Status_value]
         if 'tdtl_value' in st.session_state and st.session_state.tdtl_value:
             filtered_data = filtered_data[filtered_data["TDTL_NAME"] == st.session_state.tdtl_value]
         
-        # 5. Aggiorna i dati della griglia e invalida grid_response
+        # 6. Aggiorna i dati della griglia e invalida grid_response
         st.session_state.grid_data = filtered_data.copy()
         
         # Rimuovi grid_response per forzare la ricreazione
         if 'grid_response' in st.session_state:
             del st.session_state.grid_response
         
-        # 6. Genera una nuova chiave per il grid refresh
+        # 7. Genera una nuova chiave per il grid refresh
         st.session_state.grid_refresh_key = str(int(time.time()))
         
-        # 7. Mostra un messaggio di successo
+        # 8. Mostra un messaggio di successo
         st.success("Data refreshed successfully!")
         
-        # 8. Forza il rerun DOPO aver fatto tutte le modifiche
+        # 9. Forza il rerun DOPO aver fatto tutte le modifiche
         time.sleep(0.1)  # Piccolo delay per assicurarsi che gli stati siano aggiornati
-        st.rerun()
-    
+        st.rerun()    
 
     df_workorders_grid = pd.DataFrame()
     df_workorders_grid['WOID'] = st.session_state.df_workorders['WOID']
